@@ -11,6 +11,7 @@ import {
   PreKeyType,
   SessionCipher,
   MessageType,
+  SessionType,
 } from "@privacyresearch/libsignal-protocol-typescript";
 
 import "./App.css";
@@ -28,6 +29,11 @@ import SendIcon from "@material-ui/icons/Send";
 import { SignalProtocolStore } from "./storage-type";
 import { SignalDirectory } from "./signal-directory";
 import CodeBlock from "./code-block";
+import Key from "./components/Key";
+import Session from "./components/Session";
+
+import { doStuff, getSessionsFrom, tob64Str } from "./util";
+import { isConstructorDeclaration } from "typescript";
 
 const initialStory =
   "# Start using the demo to see what is happening in the code";
@@ -102,10 +108,13 @@ function getNewMessageID(): number {
   return msgID++;
 }
 
+const aliceName = "Alice"
+const bobName = "Bob"
+
 // define addresses
 
-const adalheidAddress = new SignalProtocolAddress("adalheid", 1);
-const brunhildeAddress = new SignalProtocolAddress("brünhild", 1);
+const aliceAddress = new SignalProtocolAddress(aliceName, 1);
+const brunhildeAddress = new SignalProtocolAddress(bobName, 1);
 
 function App() {
   const [adiStore] = useState(new SignalProtocolStore());
@@ -128,6 +137,11 @@ function App() {
   const [processing, setProcessing] = useState(false);
   const [story, setStory] = useState(initialStory);
 
+  const [aliceIdKeypair, setAliceIdKeypair] = useState(["", ""]); 
+
+  const [aliceSessions, setAliceSessions] = useState<SessionType<ArrayBuffer>[]>([]); 
+  const [bobSessions, setBobSessions] = useState<SessionType<ArrayBuffer>[]>([]); 
+
   const classes = useStyles();
 
   const updateStory = async (url: string) => {
@@ -148,8 +162,8 @@ function App() {
 
     const getReceivingSessionCipherForRecipient = (to: string) => {
       // send from Brünhild to Adalheid so use his store
-      const store = to === "brünhild" ? brunhildeStore : adiStore;
-      const address = to === "brünhild" ? adalheidAddress : brunhildeAddress;
+      const store = to === bobName ? brunhildeStore : adiStore;
+      const address = to === bobName ? aliceAddress : brunhildeAddress;
       return new SessionCipher(store, address);
     };
 
@@ -175,13 +189,15 @@ function App() {
   const readMessage = async (msg: ChatMessage, cipher: SessionCipher) => {
     let plaintext: ArrayBuffer = new Uint8Array().buffer;
     if (msg.message.type === 3) {
-      console.log({ msg });
+      console.log({preKeyMessage: msg})
+      //   console.log({ msg });
       plaintext = await cipher.decryptPreKeyWhisperMessage(
         msg.message.body!,
         "binary"
       );
       setHasSession(true);
     } else if (msg.message.type === 1) {
+      console.log({normalMessage: msg})
       plaintext = await cipher.decryptWhisperMessage(
         msg.message.body!,
         "binary"
@@ -191,6 +207,9 @@ function App() {
     console.log(stringPlaintext);
 
     const { id, to, from } = msg;
+
+    await updateAllSessions();
+
     return { id, to, from, messageText: stringPlaintext };
   };
 
@@ -210,9 +229,20 @@ function App() {
     // Store identityKeyPair somewhere durable and safe... Or do this.
     storeSomewhereSafe(store)("identityKey", identityKeyPair);
 
-    const baseKeyId = Math.floor(10000 * Math.random());
-    const preKey = await KeyHelper.generatePreKey(baseKeyId);
-    store.storePreKey(`${baseKeyId}`, preKey.keyPair);
+    // const base64String = btoa(String.fromCharCode.apply(null, new Uint8Array(identityKeyPair.privKey)))); 
+
+    var priv = Buffer.from(new Uint8Array(identityKeyPair.privKey)).toString('base64');
+    var pub = Buffer.from(new Uint8Array(identityKeyPair.pubKey)).toString('base64');
+
+    if (name === "Alice"){
+        setAliceIdKeypair([priv, pub]); 
+    }
+    console.log("Hao", `identity key ceated for ${name}`); 
+
+
+    const preKeyId = Math.floor(10000 * Math.random());
+    const preKey = await KeyHelper.generatePreKey(preKeyId);
+    store.storePreKey(`${preKeyId}`, preKey.keyPair);
 
     const signedPreKeyId = Math.floor(10000 * Math.random());
     const signedPreKey = await KeyHelper.generateSignedPreKey(
@@ -237,17 +267,19 @@ function App() {
       signedPreKey: publicSignedPreKey,
       oneTimePreKeys: [publicPreKey],
     });
+    console.log("Hao", `bundle registered at server`); 
+
     updateStory(createidMD);
   };
 
-  const createAdalheidIdentity = async () => {
-    await createID("adalheid", adiStore);
+  const createAliceIdentity = async () => {
+    await createID("Alice", adiStore);
     console.log({ adiStore });
     setAHasIdentity(true);
   };
 
   const createBrunhildeIdentity = async () => {
-    await createID("brünhild", brunhildeStore);
+    await createID(bobName, brunhildeStore);
     setBHasIdentity(true);
   };
 
@@ -269,9 +301,9 @@ function App() {
     0x85,
   ]);
 
-  const startSessionWithBrunhilde = async () => {
+  const startSessionWithBob = async () => {
     // get Brünhild' key bundle
-    const brunhildeBundle = directory.getPreKeyBundle("brünhild");
+    const brunhildeBundle = directory.getPreKeyBundle(bobName);
     console.log({ brunhildeBundle });
 
     const recipientAddress = brunhildeAddress;
@@ -282,25 +314,39 @@ function App() {
     // Process a prekey fetched from the server. Returns a promise that resolves
     // once a session is created and saved in the store, or rejects if the
     // identityKey differs from a previously seen identity for this address.
-    console.log("adalheid processing prekey");
+    console.log("Alice",  "processing prekey bundle from server...");
     await sessionBuilder.processPreKey(brunhildeBundle!);
 
     // Now we can send an encrypted message
-    const adalheidSessionCipher = new SessionCipher(adiStore, recipientAddress);
-    const ciphertext = await adalheidSessionCipher.encrypt(
+    const aliceSessionCipher = new SessionCipher(adiStore, recipientAddress);
+    console.log("Alice",  "encrypting a message to bob...");
+    const ciphertext = await aliceSessionCipher.encrypt(
       starterMessageBytes.buffer
     );
+    let newAliceSessions = await getSessionsFrom(aliceSessionCipher); 
+    // const sessionRecord = await aliceSessionCipher.getRecordPublic(); 
+    // console.log("Alice session record", sessionRecord); 
 
-    sendMessage("brünhild", "adalheid", ciphertext);
+    // const sessions = sessionRecord?.getSessions(); 
+    // newAliceSessions = await getSessionsFrom(aliceSessionCipher); 
+    // setAliceSessions(newAliceSessions);  
+
+
+    sendMessage(bobName, aliceName, ciphertext);
+    // newAliceSessions = await getSessionsFrom(aliceSessionCipher); 
+    // setAliceSessions(newAliceSessions);  
+
+    await updateAllSessions(); 
+
     updateStory(startSessionWithBMD);
   };
 
-  const startSessionWithAdalheid = async () => {
+  const startSessionWithAlice = async () => {
     // get Adalheid's key bundle
-    const adalheidBundle = directory.getPreKeyBundle("adalheid");
-    console.log({ adalheidBundle });
+    const aliceBundle = directory.getPreKeyBundle(aliceName);
+    console.log({ adalheidBundle: aliceBundle });
 
-    const recipientAddress = adalheidAddress;
+    const recipientAddress = aliceAddress;
 
     // Instantiate a SessionBuilder for a remote recipientId + deviceId tuple.
     const sessionBuilder = new SessionBuilder(brunhildeStore, recipientAddress);
@@ -309,7 +355,7 @@ function App() {
     // once a session is created and saved in the store, or rejects if the
     // identityKey differs from a previously seen identity for this address.
     console.log("brünhild processing prekey");
-    await sessionBuilder.processPreKey(adalheidBundle!);
+    await sessionBuilder.processPreKey(aliceBundle!);
 
     // Now we can send an encrypted message
     const brunhildeSessionCipher = new SessionCipher(
@@ -320,9 +366,20 @@ function App() {
       starterMessageBytes.buffer
     );
 
-    sendMessage("adalheid", "brünhild", ciphertext);
+    sendMessage(aliceName, bobName, ciphertext);
+    await updateAllSessions()
     updateStory(startSessionWithAMD);
   };
+
+  // Hao: helper function 
+  const updateAllSessions = async () => {
+    var updatedSessionCipher = getSessionCipherForRemoteAddress(bobName); 
+    var newSessions = await getSessionsFrom(updatedSessionCipher); 
+    setAliceSessions(newSessions);  
+    updatedSessionCipher = getSessionCipherForRemoteAddress(aliceName); 
+    newSessions = await getSessionsFrom(updatedSessionCipher); 
+    setBobSessions(newSessions);  
+  }
 
   const displayMessages = (sender: string) => {
     return processedMessages.map((m) => (
@@ -342,32 +399,40 @@ function App() {
     ));
   };
 
-  const getSessionCipherForRecipient = (to: string) => {
+  const getSessionCipherForRemoteAddress = (to: string) => {
     // send from Brünhild to adalheid so use his store
-    const store = to === "adalheid" ? brunhildeStore : adiStore;
-    const address = to === "adalheid" ? adalheidAddress : brunhildeAddress;
+    const store = to === aliceName ? brunhildeStore : adiStore;
+    const address = to === aliceName ? aliceAddress : brunhildeAddress;
     return new SessionCipher(store, address);
   };
 
+//   const updateSessionInfo = async () => {
+//       let aliceSessionCipher = getSessionCipherForRecipient(aliceName);
+//       let newAliceSessions = await getSessionsFrom(aliceSessionCipher); 
+//       setAliceSessions(newAliceSessions); 
+//   }
+
   const encryptAndSendMessage = async (to: string, message: string) => {
-    const cipher = getSessionCipherForRecipient(to);
-    const from = to === "adalheid" ? "brünhild" : "adalheid";
+    console.log(`sending a encrypted message to ${to}`)
+    const cipher = getSessionCipherForRemoteAddress(to);
+    const from = to === aliceName ? bobName : aliceName;
     const ciphertext = await cipher.encrypt(
       new TextEncoder().encode(message).buffer
     );
-    if (from === "adalheid") {
+    if (from === aliceName) {
       setAdalheidTyping("");
     } else {
       setBrunhildeTyping("");
     }
     sendMessage(to, from, ciphertext);
     updateStory(sendMessageMD);
+    await updateAllSessions();
   };
 
   const sendMessageControl = (to: string) => {
-    const value = to === "adalheid" ? brunhildeTyping : adalheidTyping;
+    const value = to === aliceName ? brunhildeTyping : adalheidTyping;
     const onTextChange =
-      to === "adalheid" ? setBrunhildeTyping : setAdalheidTyping;
+      to === aliceName ? setBrunhildeTyping : setAdalheidTyping;
     return (
       <Grid item xs={12} key="input">
         <Paper className={classes.paper}>
@@ -397,6 +462,30 @@ function App() {
   return (
     <div className="App">
       <Paper className={classes.paper}>
+          Hao's stuff here
+          {aHasIdentity && <Key keyDesc="Alice identity priv" keyBase64Str={aliceIdKeypair[0]}/>}
+          {aHasIdentity && <Key keyDesc="Alice identity pub" keyBase64Str={aliceIdKeypair[1]}/>}
+      </Paper>
+      <Paper className={classes.paper}>
+      <Grid container spacing={2} className={classes.container}>
+          <Grid item xs={10}>
+              {
+                aliceSessions.map(session => {
+                    return <Session name={"Alice"} session={session}/>
+                })
+              }
+          </Grid>
+          <Grid item xs={10}>
+              {
+                bobSessions.map(session => {
+                    return <Session name={"Bob"} session={session}/>
+                })
+              }
+          </Grid>
+      </Grid>
+      
+      </Paper>
+      <Paper className={classes.paper}>
         <Grid container spacing={2} className={classes.container}>
           <Grid item xs={3}>
             <Paper className={classes.paper}>
@@ -407,7 +496,7 @@ function App() {
                     style={{ textAlign: "right", verticalAlign: "top" }}
                     gutterBottom
                   >
-                    Adalheid's View
+                    Alice's View
                   </Typography>
                 </Grid>
                 <Grid item xs={1}></Grid>
@@ -418,7 +507,7 @@ function App() {
                   {aHasIdentity ? (
                     <React.Fragment>
                       <Chip
-                        label={`Adalheid Registration ID: ${adiStore.get(
+                        label={`${aliceName} Registration ID: ${adiStore.get(
                           "registrationID",
                           ""
                         )}`}
@@ -429,7 +518,7 @@ function App() {
                         <Button
                           className={classes.buttonitem}
                           variant="contained"
-                          onClick={startSessionWithBrunhilde}
+                          onClick={startSessionWithBob}
                         >
                           Start session with Brünhild
                         </Button>
@@ -439,21 +528,21 @@ function App() {
                     <Button
                       className={classes.buttonitem}
                       variant="contained"
-                      onClick={createAdalheidIdentity}
+                      onClick={createAliceIdentity}
                     >
-                      Create an identity for Adalheid
+                      Create an identity for Alice
                     </Button>
                   )}
                 </Grid>
-                {hasSession ? sendMessageControl("brünhild") : <div />}
-                {displayMessages("adalheid")}
+                {hasSession ? sendMessageControl(bobName) : <div />}
+                {displayMessages(aliceName)}
               </Grid>
             </Paper>
           </Grid>
           <Grid item xs={6}>
             <Paper className={classes.paper}>
               <Typography variant="h3" component="h3" gutterBottom>
-                Adalheid talks to Brünhild
+                {aliceName} talks to Brünhild
               </Typography>
               <ReactMarkdown
                 source={story}
@@ -492,7 +581,7 @@ function App() {
                         <Button
                           className={classes.buttonitem}
                           variant="contained"
-                          onClick={startSessionWithAdalheid}
+                          onClick={startSessionWithAlice}
                         >
                           Start session with Adalheid
                         </Button>
@@ -507,8 +596,8 @@ function App() {
                     </Button>
                   )}
                 </Grid>
-                {hasSession ? sendMessageControl("adalheid") : <div />}
-                {displayMessages("brünhild")}
+                {hasSession ? sendMessageControl(aliceName) : <div />}
+                {displayMessages(bobName)}
               </Grid>
             </Paper>
           </Grid>
