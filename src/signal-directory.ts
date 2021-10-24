@@ -7,7 +7,7 @@ export interface PublicDirectoryEntry {
     oneTimePreKey?: ArrayBuffer
 }
 
-interface FullDirectoryEntry {
+export interface FullDirectoryEntry {
     registrationId: number
     identityPubKey: ArrayBuffer
     signedPreKey: SignedPublicPreKeyType

@@ -65,7 +65,6 @@ export default function Chain(props) {
                     </ListItem>
                     <ListItem item xs={10}>
                         <Key desc={"chain key"} keyArray = {props.chain.chainKey.key}/>
-                        {/* <ListItemText primary={`Chain Key: ${tob64Str(props.chain.chainKey.key)}`} /> */}
                     </ListItem>
                     <ListItem item xs={10}>
                         <ListItemText primary={`ChainKey Counter: ${props.chain.chainKey.counter}`} />
