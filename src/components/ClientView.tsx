@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+
+// material UI imports 
 import {
     Paper,
     Grid,
@@ -8,6 +10,7 @@ import {
     Chip,
     TextField,
 } from "@material-ui/core";
+import SendIcon from "@material-ui/icons/Send";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -24,6 +27,8 @@ import {
 } from "@privacyresearch/libsignal-protocol-typescript";
 import { SignalProtocolStore } from "../storage-type";
 import { createID } from "../utils";
+import { getSessionsFrom } from "../util";
+import Session from "./Session";
 
 interface ProcessedChatMessage {
     id: number;
@@ -86,6 +91,7 @@ interface Props {
     otherHasIdentity: boolean, 
     getPreKeyBundleFunc: (name: string) => any, 
     registerFunc: (name: string, bundle: FullDirectoryEntry) => void, 
+    sendMessageFunc: (to: string, from: string, message: MessageType) => void, 
 }
 
 export default function ClientView(props: Props) {
@@ -96,10 +102,11 @@ export default function ClientView(props: Props) {
     const [processedMessages, setProcessedMessages] = useState<
         ProcessedChatMessage[]
     >([]);
+    const [draftMessage, setDraftMessage] = useState("");
+    const [sessions, setSessions] = useState<SessionType<ArrayBuffer>[]>([]);
+    
     const otherHasIdentity = props.otherHasIdentity;
     const otherClientAddress = new SignalProtocolAddress(props.otherClientName, 1);
-
-
 
     const createIdentity = async () => {
         let registerPayload = await createID(props.clientName, localStore);
@@ -113,6 +120,10 @@ export default function ClientView(props: Props) {
         props.registerFunc(props.clientName, registerPayload); 
         console.log({ "store": localStore });
         setHasIdentity(true);
+    };
+
+    const getSessionCipherForRemoteAddress = () => {
+        return new SessionCipher(localStore, otherClientAddress);
     };
 
     const displayMessages = (sender: string) => {
@@ -133,10 +144,15 @@ export default function ClientView(props: Props) {
         ));
     };
 
+    const updateAllSessions = async () => {
+        var updatedSessionCipher = getSessionCipherForRemoteAddress();
+        var newSessions = await getSessionsFrom(updatedSessionCipher);
+        setSessions(newSessions);
+    }
+
     const startSessionWithOther = async () => {
-        // get Brünhild' key bundle
         const prekeyBundle = props.getPreKeyBundleFunc(props.otherClientName);
-        console.log({ prekeyBundle });
+        console.log({"Hao: prekey bundle": prekeyBundle});
         const recipientAddress = otherClientAddress;
         if (prekeyBundle === undefined) {
             console.error("Problem -- other client has not registered yet!")
@@ -151,6 +167,7 @@ export default function ClientView(props: Props) {
         // identityKey differs from a previously seen identity for this address.
         console.log(props.clientName, "processing prekey bundle from server...");
         await sessionBuilder.processPreKey(prekeyBundle!);
+        console.log(props.clientName, "processed prekey bundle from server!");
 
         // Now we can send an encrypted message
         // const aliceSessionCipher = new SessionCipher(adiStore, recipientAddress);
@@ -159,6 +176,52 @@ export default function ClientView(props: Props) {
         // await updateAllSessions(); 
         // updateStory(startSessionWithBMD);        
     }
+
+    const encryptAndSendMessage = async (to: string, message: string) => {
+        console.log(props.clientName, `sending a encrypted message to ${to}...`)
+        const from = props.clientName; 
+        const cipher = getSessionCipherForRemoteAddress();
+        const ciphertext = await cipher.encrypt(
+            new TextEncoder().encode(message).buffer
+        );
+        setDraftMessage(""); 
+
+        props.sendMessageFunc(to, from, ciphertext);
+        console.log(props.clientName, `message sent!`)
+
+        // updateStory(sendMessageMD);
+        await updateAllSessions();
+    };
+
+    const sendMessageControl = (to: string) => {
+        const value = draftMessage;
+        const onTextChange = setDraftMessage; 
+        return (
+            <Grid item xs={12} key="input">
+                <Paper className={classes.paper}>
+                    <TextField
+                        id="outlined-multiline-static"
+                        label={`Message ${to}`}
+                        multiline
+                        value={value}
+                        onChange={(event) => {
+                            onTextChange(event.target.value);
+                        }}
+                        variant="outlined"
+                    ></TextField>
+                    <Button
+                        onClick={() => encryptAndSendMessage(to, value)}
+                        variant="contained"
+                        className={classes.buttonitem}
+                    >
+                        {" "}
+                        <SendIcon />
+                    </Button>
+                </Paper>
+            </Grid>
+        );
+    };
+
 
 
     return (
@@ -186,7 +249,7 @@ export default function ClientView(props: Props) {
                                 )}`}
                             ></Chip>
                             {hasSession || !(hasIdentity && otherHasIdentity) ? (
-                                <div>Placeholder for start session</div>
+                                <div></div>
                             ) : (
                                 <Button
                                     className={classes.buttonitem}
@@ -207,12 +270,19 @@ export default function ClientView(props: Props) {
                         </Button>
                     )}
                 </Grid>
-                {/* {hasSession ? sendMessageControl(props.otherClientName) : <div />} */}
+                {hasSession ? sendMessageControl(props.otherClientName) : <div />}
                 {displayMessages(props.clientName)}
+                <Grid item xs={12}>
+                    {
+                        sessions.map(session => {
+                            return <Session name={props.clientName} session={session} />
+                        })
+                    }
+                </Grid>
+
             </Grid>
         </Paper>
     )
 }
 
 
-// TODO: define sendMessageControl

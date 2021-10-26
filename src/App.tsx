@@ -184,23 +184,23 @@ function App() {
             return new SessionCipher(store, address);
         };
 
-        const doProcessing = async () => {
-            while (messages.length > 0) {
-                const nextMsg = messages.shift();
-                if (!nextMsg) {
-                    continue;
-                }
-                const cipher = getReceivingSessionCipherForRecipient(nextMsg.to);
-                const processed = await readMessage(nextMsg, cipher);
-                processedMessages.push(processed);
-            }
-            setMessages([...messages]);
-            setProcessedMessages([...processedMessages]);
-        };
-        setProcessing(true);
-        doProcessing().then(() => {
-            setProcessing(false);
-        });
+        // const doProcessing = async () => {
+        //     while (messages.length > 0) {
+        //         const nextMsg = messages.shift();
+        //         if (!nextMsg) {
+        //             continue;
+        //         }
+        //         const cipher = getReceivingSessionCipherForRecipient(nextMsg.to);
+        //         const processed = await readMessage(nextMsg, cipher);
+        //         processedMessages.push(processed);
+        //     }
+        //     setMessages([...messages]);
+        //     setProcessedMessages([...processedMessages]);
+        // };
+        // setProcessing(true);
+        // doProcessing().then(() => {
+        //     setProcessing(false);
+        // });
     }, [adiStore, brunhildeStore, messages, processedMessages, processing]);
 
     const readMessage = async (msg: ChatMessage, cipher: SessionCipher) => {
@@ -407,6 +407,43 @@ function App() {
         ));
     };
 
+    function showPendingMessages() {
+        return  (
+            <Grid container spacing={2}>            
+                <Grid xs={12} item>
+                <Typography>Pending Messages</Typography>
+                </Grid>
+                {pendingMessageBody()}
+            </Grid>
+        )
+    };
+
+    const pendingMessageBody = () => {
+       return messages.map((m) => (
+            <React.Fragment>
+                <Grid xs = {6} item key={m.id}>
+                    <Paper>
+                        <Typography variant="body1">From: {m.from}; To: {m.to}; Id: {m.id}</Typography>
+                    </Paper>
+                </Grid>
+                <Grid xs = {3} item>
+                    <Button onClick={() => forwardMsg(m)}>Forward</Button>
+                </Grid>
+                <Grid xs = {3} item>
+                    <Button onClick={() => dropMsg(m)}>Drop</Button>
+                </Grid>
+            </React.Fragment>
+       ))
+    }; 
+
+    const forwardMsg = (message: any) => {
+        console.log('forward clicked')
+    }
+
+    const dropMsg = (message: any) => {
+        console.log('drop clicked')
+    }
+
     const getSessionCipherForRemoteAddress = (to: string) => {
         // send from Brünhild to adalheid so use his store
         const store = to === aliceName ? brunhildeStore : adiStore;
@@ -494,16 +531,17 @@ function App() {
             </Paper> */}
             <Paper className={classes.paper}>
                 <Grid container spacing={2} className={classes.container}>
-                    <Grid item xs={3}>
+                    <Grid item xs={5}>
                         <ClientView
                             clientName={aliceName}
                             otherClientName={bobName}
                             getPreKeyBundleFunc={getPreKeyBundleFunc}
                             otherHasIdentity={bHasIdentity}
                             registerFunc={registerFunc}
+                            sendMessageFunc={sendMessage}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={2}>
                         <Paper className={classes.paper}>
                             <Typography variant="h3" component="h3" gutterBottom>
                                 {aliceName} talks to {bobName}
@@ -513,15 +551,17 @@ function App() {
                                 className={classes.story}
                                 renderers={{ code: CodeBlock }}
                             />
+                            {showPendingMessages()}
                         </Paper>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={5}>
                         <ClientView
                             clientName={bobName}
                             otherClientName={aliceName}
                             getPreKeyBundleFunc={getPreKeyBundleFunc}
                             otherHasIdentity={aHasIdentity}
                             registerFunc={registerFunc}
+                            sendMessageFunc={sendMessage}
                         />
                     </Grid>
                 </Grid>
