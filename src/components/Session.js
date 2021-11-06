@@ -19,17 +19,15 @@ export default function Session(props){
         )
     }
 
-    // console.log("Rendering Session", props.session) 
-    
     if (props.session === null){
-        return <>Session: NULL</>
+        return <>NO SESSION EXISTS</>
     }
 
     return (
         <div className="sessionType">
             <Paper><h2>{props.name}'s session</h2></Paper>
             <Paper className="ratchet">
-                <Ratchet ratchet = {props.session.currentRatchet}/>
+                <Ratchet clientName={props.name} ratchet = {props.session.currentRatchet}/>
             </Paper>
             {props.session.chains !== undefined && chains()}
         </div>

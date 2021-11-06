@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import ReactMarkdown from "react-markdown";
+import PubSub from 'pubsub-js'
 
 import {
     KeyHelper,
@@ -42,6 +43,8 @@ const createidMD = require("./createid.md");
 const startSessionWithAMD = require("./start-session-with-a.md");
 const startSessionWithBMD = require("./start-session-with-b.md");
 const sendMessageMD = require("./send-message.md");
+
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -88,6 +91,11 @@ const useStyles = makeStyles((theme) => ({
         textAlign: "left",
         fontSize: "10pt",
     },
+    preKeyMessage: {
+        backgroundColor: "red",
+    }, 
+    normalMessage: {
+    }
 }));
 
 interface ChatMessage {
@@ -133,12 +141,10 @@ function App() {
     >([]);
 
     const [aHasSession, setaHasSession] = useState(false);
-    const [bHasSession, setbHasSession] = useState(false);
 
     const [adalheidTyping, setAdalheidTyping] = useState("");
     const [brunhildeTyping, setBrunhildeTyping] = useState("");
 
-    const [processing, setProcessing] = useState(false);
     const [story, setStory] = useState(initialStory);
 
     const [aliceIdKeypair, setAliceIdKeypair] = useState(["", ""]);
@@ -172,69 +178,44 @@ function App() {
         }
     }
 
-    useEffect(() => {
-        if (!messages.find((m) => !m.delivered) || processing) {
-            return;
-        }
+    useEffect(()=> {
+        // publish a topic asynchronously
+        PubSub.publish('MY TOPIC', 'hello world!');
+        console.log("published!"); 
+    }, []);
 
-        const getReceivingSessionCipherForRecipient = (to: string) => {
-            // send from Brünhild to Adalheid so use his store
-            const store = to === bobName ? brunhildeStore : adiStore;
-            const address = to === bobName ? aliceAddress : brunhildeAddress;
-            return new SessionCipher(store, address);
-        };
+    // const readMessage = async (msg: ChatMessage, cipher: SessionCipher) => {
+    //     let plaintext: ArrayBuffer = new Uint8Array().buffer;
+    //     if (msg.message.type === 3) {
+    //         console.log({ preKeyMessage: msg })
+    //         //   console.log({ msg });
+    //         plaintext = await cipher.decryptPreKeyWhisperMessage(
+    //             msg.message.body!,
+    //             "binary"
+    //         );
+    //     } else if (msg.message.type === 1) {
+    //         console.log({ normalMessage: msg })
+    //         plaintext = await cipher.decryptWhisperMessage(
+    //             msg.message.body!,
+    //             "binary"
+    //         );
+    //     }
+    //     const stringPlaintext = new TextDecoder().decode(new Uint8Array(plaintext));
+    //     console.log(stringPlaintext);
 
-        // const doProcessing = async () => {
-        //     while (messages.length > 0) {
-        //         const nextMsg = messages.shift();
-        //         if (!nextMsg) {
-        //             continue;
-        //         }
-        //         const cipher = getReceivingSessionCipherForRecipient(nextMsg.to);
-        //         const processed = await readMessage(nextMsg, cipher);
-        //         processedMessages.push(processed);
-        //     }
-        //     setMessages([...messages]);
-        //     setProcessedMessages([...processedMessages]);
-        // };
-        // setProcessing(true);
-        // doProcessing().then(() => {
-        //     setProcessing(false);
-        // });
-    }, [adiStore, brunhildeStore, messages, processedMessages, processing]);
+    //     const { id, to, from } = msg;
 
-    const readMessage = async (msg: ChatMessage, cipher: SessionCipher) => {
-        let plaintext: ArrayBuffer = new Uint8Array().buffer;
-        if (msg.message.type === 3) {
-            console.log({ preKeyMessage: msg })
-            //   console.log({ msg });
-            plaintext = await cipher.decryptPreKeyWhisperMessage(
-                msg.message.body!,
-                "binary"
-            );
-        } else if (msg.message.type === 1) {
-            console.log({ normalMessage: msg })
-            plaintext = await cipher.decryptWhisperMessage(
-                msg.message.body!,
-                "binary"
-            );
-        }
-        const stringPlaintext = new TextDecoder().decode(new Uint8Array(plaintext));
-        console.log(stringPlaintext);
-
-        const { id, to, from } = msg;
-
-        if (to === aliceName) {
-            setaHasSession(true);
-        } else {
-            setbHasSession(true);
-        }
+    //     if (to === aliceName) {
+    //         setaHasSession(true);
+    //     } else {
+    //         setbHasSession(true);
+    //     }
 
 
-        await updateAllSessions();
+    //     await updateAllSessions();
 
-        return { id, to, from, messageText: stringPlaintext };
-    };
+    //     return { id, to, from, messageText: stringPlaintext };
+    // };
 
     const storeSomewhereSafe = (store: SignalProtocolStore) => (
         key: string,
@@ -295,35 +276,6 @@ function App() {
         updateStory(createidMD);
     };
 
-    const createAliceIdentity = async () => {
-        await createID("Alice", adiStore);
-        console.log({ adiStore });
-        setAHasIdentity(true);
-    };
-
-    const createBrunhildeIdentity = async () => {
-        await createID(bobName, brunhildeStore);
-        setBHasIdentity(true);
-    };
-
-    const starterMessageBytes = Uint8Array.from([
-        0xce,
-        0x93,
-        0xce,
-        0xb5,
-        0xce,
-        0xb9,
-        0xce,
-        0xac,
-        0x20,
-        0xcf,
-        0x83,
-        0xce,
-        0xbf,
-        0xcf,
-        0x85,
-    ]);
-
     const startSessionWithBob = async () => {
         // get Brünhild' key bundle
         const brunhildeBundle = directory.getPreKeyBundle(bobName);
@@ -347,36 +299,6 @@ function App() {
         await updateAllSessions();
 
         updateStory(startSessionWithBMD);
-    };
-
-    const startSessionWithAlice = async () => {
-        // get Adalheid's key bundle
-        const aliceBundle = directory.getPreKeyBundle(aliceName);
-        console.log({ adalheidBundle: aliceBundle });
-
-        const recipientAddress = aliceAddress;
-
-        // Instantiate a SessionBuilder for a remote recipientId + deviceId tuple.
-        const sessionBuilder = new SessionBuilder(brunhildeStore, recipientAddress);
-
-        // Process a prekey fetched from the server. Returns a promise that resolves
-        // once a session is created and saved in the store, or rejects if the
-        // identityKey differs from a previously seen identity for this address.
-        console.log("brünhild processing prekey");
-        await sessionBuilder.processPreKey(aliceBundle!);
-
-        // Now we can send an encrypted message
-        const brunhildeSessionCipher = new SessionCipher(
-            brunhildeStore,
-            recipientAddress
-        );
-        const ciphertext = await brunhildeSessionCipher.encrypt(
-            starterMessageBytes.buffer
-        );
-
-        sendMessage(aliceName, bobName, ciphertext);
-        await updateAllSessions()
-        updateStory(startSessionWithAMD);
     };
 
     // Hao: helper function 
@@ -422,14 +344,16 @@ function App() {
        return messages.map((m) => (
             <React.Fragment>
                 <Grid xs = {6} item key={m.id}>
-                    <Paper>
-                        <Typography variant="body1">From: {m.from}; To: {m.to}; Id: {m.id}</Typography>
+                    <Paper className={
+                        m.message.type === 3 ? classes.preKeyMessage : classes.normalMessage
+                    }>
+                        <Typography variant="body1">{m.from} - {m.to}; Id: {m.id}; Type:{m.message.type} </Typography>
                     </Paper>
                 </Grid>
-                <Grid xs = {3} item>
+                <Grid xs = {2} item>
                     <Button onClick={() => forwardMsg(m)}>Forward</Button>
                 </Grid>
-                <Grid xs = {3} item>
+                <Grid xs = {2} item>
                     <Button onClick={() => dropMsg(m)}>Drop</Button>
                 </Grid>
             </React.Fragment>
@@ -438,10 +362,21 @@ function App() {
 
     const forwardMsg = (message: any) => {
         console.log('forward clicked')
+        // publish message to child component
+        PubSub.publish('message', message);
+
+        // remove message 
+        const index = messages.indexOf(message);
+        if (index > -1) {
+          messages.splice(index, 1);
+          setMessages([...messages]); 
+        }
     }
 
     const dropMsg = (message: any) => {
-        console.log('drop clicked')
+        console.log('drop message clicked')
+        messages.shift()
+        setMessages([...messages]);
     }
 
     const getSessionCipherForRemoteAddress = (to: string) => {
@@ -450,12 +385,6 @@ function App() {
         const address = to === aliceName ? aliceAddress : brunhildeAddress;
         return new SessionCipher(store, address);
     };
-
-    //   const updateSessionInfo = async () => {
-    //       let aliceSessionCipher = getSessionCipherForRecipient(aliceName);
-    //       let newAliceSessions = await getSessionsFrom(aliceSessionCipher); 
-    //       setAliceSessions(newAliceSessions); 
-    //   }
 
     const encryptAndSendMessage = async (to: string, message: string) => {
         console.log(`sending a encrypted message to ${to}`)
@@ -506,32 +435,9 @@ function App() {
 
     return (
         <div className="App">
-            {/* <Paper className={classes.paper}>
-          Hao's stuff here
-          {aHasIdentity && <Key keyDesc="Alice identity priv" keyBase64Str={aliceIdKeypair[0]}/>}
-          {aHasIdentity && <Key keyDesc="Alice identity pub" keyBase64Str={aliceIdKeypair[1]}/>}
-      </Paper> */}
-            {/* <Paper className={classes.paper}>
-                <Grid container spacing={2} className={classes.container}>
-                    <Grid item xs={10}>
-                        {
-                            aliceSessions.map(session => {
-                                return <Session name={"Alice"} session={session} />
-                            })
-                        }
-                    </Grid>
-                    <Grid item xs={10}>
-                        {
-                            bobSessions.map(session => {
-                                return <Session name={"Bob"} session={session} />
-                            })
-                        }
-                    </Grid>
-                </Grid>
-            </Paper> */}
             <Paper className={classes.paper}>
                 <Grid container spacing={2} className={classes.container}>
-                    <Grid item xs={5}>
+                    <Grid item xs={4}>
                         <ClientView
                             clientName={aliceName}
                             otherClientName={bobName}
@@ -541,10 +447,10 @@ function App() {
                             sendMessageFunc={sendMessage}
                         />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={4}>
                         <Paper className={classes.paper}>
                             <Typography variant="h3" component="h3" gutterBottom>
-                                {aliceName} talks to {bobName}
+                                Live Demo of the Signal Protocol!
                             </Typography>
                             <ReactMarkdown
                                 source={story}
@@ -554,7 +460,7 @@ function App() {
                             {showPendingMessages()}
                         </Paper>
                     </Grid>
-                    <Grid item xs={5}>
+                    <Grid item xs={4}>
                         <ClientView
                             clientName={bobName}
                             otherClientName={aliceName}

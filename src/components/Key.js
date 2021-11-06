@@ -1,8 +1,11 @@
 
 import React from "react"
+import { uint8ArrayToString } from "../storage-type";
 import { tob64Str } from "../util";
 const { Generator } = require('contrast-color-generator');
 let generator = new Generator(180, {minimumRatio: 4.5});
+
+// show the last 10 chars of string 
 
 export default function Key(props) {
     if (props.keyArray) {
@@ -15,7 +18,7 @@ export default function Key(props) {
         }
         return (
             <div className="key" style={keyStyle}>
-                {props.desc}: {keyBase64Str}
+                {props.desc}: {keyBase64Str.slice(-10)} 
             </div>
         )
     } else {
@@ -28,7 +31,8 @@ export default function Key(props) {
 function colorFromU8Array(u8Array) {
     if (u8Array.length != 3) {
         console.log("error: incorrect input length!");
-        return "black";
+        console.log({string: uint8ArrayToString(u8Array)});
+        return "#FFFFFF";
     }
     let st = buf2hex(u8Array);
     return "#" + st;

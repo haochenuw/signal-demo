@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PubSub from 'pubsub-js'
 
 // material UI imports 
 import {
@@ -27,7 +28,7 @@ import {
 } from "@privacyresearch/libsignal-protocol-typescript";
 import { SignalProtocolStore } from "../storage-type";
 import { createID } from "../utils";
-import { getSessionsFrom } from "../util";
+import { getSessionsFrom, readMessage, ChatMessage} from "../util";
 import Session from "./Session";
 
 interface ProcessedChatMessage {
@@ -104,21 +105,63 @@ export default function ClientView(props: Props) {
     >([]);
     const [draftMessage, setDraftMessage] = useState("");
     const [sessions, setSessions] = useState<SessionType<ArrayBuffer>[]>([]);
+
+    const [incomingMessages, setIncomingMessages] = useState<ChatMessage[]>([]); 
+    const [processing, setProcessing] = useState(false);
     
     const otherHasIdentity = props.otherHasIdentity;
     const otherClientAddress = new SignalProtocolAddress(props.otherClientName, 1);
 
+    const getSessionCipher = () => {
+        return new SessionCipher(localStore, otherClientAddress);
+    };
+
+    const messageHandler = (topic: any, message: ChatMessage) => {
+        // if not for me, skip 
+        if (message.to !== props.clientName){
+            return; 
+        }
+        setIncomingMessages([...incomingMessages, message]);
+    }
+
+    useEffect(()=>{
+        var subscription = PubSub.subscribe('message', messageHandler);
+    }, []);
+
+    useEffect(() => {
+        if (processing) {
+            // do nothing 
+            return;
+        }
+        const doProcessing = async () => {
+            while (incomingMessages.length > 0) {
+                const nextMsg = incomingMessages.shift();
+                if (!nextMsg) {
+                    continue;
+                }
+                const cipher = getSessionCipher();
+                if( hasSession === false ){
+                    setHasSession(true)
+                }
+                const processed = await readMessage(nextMsg, cipher);
+                processedMessages.push(processed);
+                
+            }
+            setProcessedMessages([...processedMessages]);
+            setIncomingMessages([...incomingMessages]);
+        }
+        setProcessing(true); 
+        doProcessing().then(
+            () => { 
+                setProcessing(false);             
+                updateAllSessions();
+            }
+        );
+    }, [incomingMessages]);
+
     const createIdentity = async () => {
         let registerPayload = await createID(props.clientName, localStore);
-        // directory.storeKeyBundle(name, {
-        //     registrationId,
-        //     identityPubKey: identityKeyPair.pubKey,
-        //     signedPreKey: publicSignedPreKey,
-        //     oneTimePreKeys: [publicPreKey],
-        //   });
-        // console.log(name, `PreKey bundle registered at server`); 
         props.registerFunc(props.clientName, registerPayload); 
-        console.log({ "store": localStore });
         setHasIdentity(true);
     };
 
@@ -165,15 +208,13 @@ export default function ClientView(props: Props) {
         // Process a prekey fetched from the server. Returns a promise that resolves
         // once a session is created and saved in the store, or rejects if the
         // identityKey differs from a previously seen identity for this address.
-        console.log(props.clientName, "processing prekey bundle from server...");
         await sessionBuilder.processPreKey(prekeyBundle!);
         console.log(props.clientName, "processed prekey bundle from server!");
 
         // Now we can send an encrypted message
         // const aliceSessionCipher = new SessionCipher(adiStore, recipientAddress);
         setHasSession(true)
-
-        // await updateAllSessions(); 
+        await updateAllSessions() 
         // updateStory(startSessionWithBMD);        
     }
 
@@ -185,10 +226,18 @@ export default function ClientView(props: Props) {
             new TextEncoder().encode(message).buffer
         );
         setDraftMessage(""); 
-
+        
         props.sendMessageFunc(to, from, ciphertext);
+        
         console.log(props.clientName, `message sent!`)
 
+        const localMessage = {
+            id: 0, 
+            to: to, 
+            from: props.clientName, 
+            messageText: message 
+        }
+        setProcessedMessages([...processedMessages, localMessage]); 
         // updateStory(sendMessageMD);
         await updateAllSessions();
     };
