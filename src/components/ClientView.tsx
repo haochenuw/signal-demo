@@ -5,11 +5,12 @@ import PubSub from 'pubsub-js'
 import {
     Paper,
     Grid,
-    Avatar,
     Typography,
     Button,
     Chip,
     TextField,
+    Tabs, 
+    Tab
 } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 
@@ -271,62 +272,85 @@ export default function ClientView(props: Props) {
         );
     };
 
+    const [selectedTab, setSelectedTab] = useState(0); 
+    const handleChange = (_: any, newValue: number) => {
+        setSelectedTab(newValue);
+    };
 
+    function TabPanel(props: any) {
+        const { children, value, index, ...other } = props;
+      
+        return (
+          <div
+            role="tabpanel"
+            hidden={value !== index}
+          >
+            {value === index && 
+                children
+            }
+          </div>
+        );
+      }
+      
+    const identityPanel = () => {
+        return hasIdentity ? (
+            <React.Fragment>
+                <Chip
+                    label={`${props.clientName}'s Registration ID: ${localStore.get(
+                        "registrationID",
+                        ""
+                    )}`}
+                ></Chip>
+                {hasSession || !(hasIdentity && otherHasIdentity) ? (
+                    <div></div>
+                ) : (
+                    <Button
+                        className={classes.buttonitem}
+                        variant="contained"
+                        onClick={startSessionWithOther}
+                    >
+                        Start session with {props.otherClientName}
+                    </Button>
+                )}
+            </React.Fragment>
+        ) : (
+            <Button
+                className={classes.buttonitem}
+                variant="contained"
+                onClick={createIdentity}
+            >
+                Create an identity for {props.clientName}
+            </Button>
+        )
+    }
+
+    const messagePanel = () => {
+        return (
+            <>
+            {hasSession ? sendMessageControl(props.otherClientName) : <div />}
+            {displayMessages(props.clientName)}
+            </>
+        )
+    }
+
+    const sessionsPanel = () => {
+        return sessions.map(session => {
+            return <Session name={props.clientName} session={session} />
+        })
+    }
 
     return (
         <Paper className={classes.paper}>
             <Grid container>
-                <Grid item xs={9}>
-                    <Typography
-                        variant="h5"
-                        style={{ textAlign: "right", verticalAlign: "top" }}
-                        gutterBottom
-                    >
-                    </Typography>
-                </Grid>
-                <Grid item xs={1}></Grid>
-                <Grid item xs={2}>
-                    <Avatar>A</Avatar>
-                </Grid>
+                <Tabs value={selectedTab} onChange={handleChange} aria-label="basic tabs example">
+                    <Tab label="Basic Info"/>
+                    <Tab label="Messaging"/>
+                    <Tab label="Sessions"/>
+                </Tabs>
                 <Grid item xs={12}>
-                    {hasIdentity ? (
-                        <React.Fragment>
-                            <Chip
-                                label={`${props.clientName}'s Registration ID: ${localStore.get(
-                                    "registrationID",
-                                    ""
-                                )}`}
-                            ></Chip>
-                            {hasSession || !(hasIdentity && otherHasIdentity) ? (
-                                <div></div>
-                            ) : (
-                                <Button
-                                    className={classes.buttonitem}
-                                    variant="contained"
-                                    onClick={startSessionWithOther}
-                                >
-                                    Start session with {props.otherClientName}
-                                </Button>
-                            )}
-                        </React.Fragment>
-                    ) : (
-                        <Button
-                            className={classes.buttonitem}
-                            variant="contained"
-                            onClick={createIdentity}
-                        >
-                            Create an identity for {props.clientName}
-                        </Button>
-                    )}
-                </Grid>
-                {hasSession ? sendMessageControl(props.otherClientName) : <div />}
-                {displayMessages(props.clientName)}
-                <Grid item xs={12}>
-                    {
-                        sessions.map(session => {
-                            return <Session name={props.clientName} session={session} />
-                        })
-                    }
+                    {selectedTab === 0 && identityPanel()}
+                    {selectedTab === 1 && messagePanel()}
+                    {selectedTab === 2 && sessionsPanel()}
                 </Grid>
 
             </Grid>

@@ -3,7 +3,7 @@ import Chain from "./Chain"
 import Ratchet from "./Ratchet";
 
 import {
-    Paper,
+    Paper, Typography,
   } from "@material-ui/core";
 
 export default function Session(props){
@@ -25,9 +25,11 @@ export default function Session(props){
 
     return (
         <div className="sessionType">
-            <Paper><h2>{props.name}'s session</h2></Paper>
+            <Paper>
+            <Typography>{props.name}'s session</Typography>
             <Paper className="ratchet">
                 <Ratchet clientName={props.name} ratchet = {props.session.currentRatchet}/>
+            </Paper>
             </Paper>
             {props.session.chains !== undefined && chains()}
         </div>
