@@ -14,10 +14,12 @@ export default function Key(props) {
         let colorHex = colorFromU8Array(u8rep.slice(-3))
         const keyStyle = {
             color: colorHex,
-            background: generator.generate(colorHex).hexStr
+            background: generator.generate(colorHex).hexStr, 
+            margin: 10, 
+            padding: 10, 
         }
         return (
-            <div className="key" style={keyStyle}>
+            <div className="key" style={keyStyle} onClick={props.onClick}>
                 {props.desc}: {keyBase64Str.slice(-10)} 
             </div>
         )

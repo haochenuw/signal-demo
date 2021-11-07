@@ -335,7 +335,7 @@ export default function ClientView(props: Props) {
 
     const sessionsPanel = () => {
         return sessions.map(session => {
-            return <Session name={props.clientName} session={session} />
+            return <Session key={session} name={props.clientName} session={session} />
         })
     }
 

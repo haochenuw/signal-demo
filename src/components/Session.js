@@ -12,7 +12,7 @@ export default function Session(props){
             <div className="chains">
                     {
                         Object.keys(props.session.chains).map((key, index) => ( 
-                            <Chain chain={props.session.chains[key]} />
+                            <Chain key={index} chain={props.session.chains[key]} />
                         ))
                     }
             </div>
@@ -27,11 +27,9 @@ export default function Session(props){
         <div className="sessionType">
             <Paper>
             <Typography>{props.name}'s session</Typography>
-            <Paper className="ratchet">
-                <Ratchet clientName={props.name} ratchet = {props.session.currentRatchet}/>
+            <Ratchet clientName={props.name} ratchet = {props.session.currentRatchet}/>
+            {/* {props.session.chains !== undefined && chains()} */}
             </Paper>
-            </Paper>
-            {props.session.chains !== undefined && chains()}
         </div>
     )
 }

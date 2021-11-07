@@ -60,13 +60,13 @@ export default function Chain(props) {
                         </ListSubheader>
                     }
                 >
-                    <ListItem item xs={10}>
+                    <ListItem>
                         <ListItemText primary={`Chain Type: ${ChainType[props.chain.chainType]}`} />
                     </ListItem>
-                    <ListItem item xs={10}>
+                    <ListItem>
                         <Key desc={"chain key"} keyArray = {props.chain.chainKey.key}/>
                     </ListItem>
-                    <ListItem item xs={10}>
+                    <ListItem>
                         <ListItemText primary={`ChainKey Counter: ${props.chain.chainKey.counter}`} />
                     </ListItem>
                     <ListItem button onClick={handleClick}>
