@@ -8,6 +8,12 @@ let generator = new Generator(180, {minimumRatio: 4.5});
 // show the last 10 chars of string 
 
 export default function Key(props) {
+    var clickableKeyStyle = {
+        cursor: 'pointer', 
+    }
+    if (props.onClick === undefined){
+        clickableKeyStyle = {}
+    } 
     if (props.keyArray) {
         let keyBase64Str = tob64Str(props.keyArray)
         let u8rep = new Uint8Array(props.keyArray)
@@ -19,7 +25,7 @@ export default function Key(props) {
             padding: 10, 
         }
         return (
-            <div className="key" style={keyStyle} onClick={props.onClick}>
+            <div style={clickableKeyStyle} className="key" style={keyStyle} onClick={props.onClick}>
                 {props.desc}: {keyBase64Str.slice(-10)} 
             </div>
         )

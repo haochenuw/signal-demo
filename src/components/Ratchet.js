@@ -16,6 +16,7 @@ import React, { useState, useEffect } from "react";
 import Key from "./Key.js"
 import {abToS} from "../util.tsx"
 import Chain from "./Chain.js"
+import FancyChain from "./FancyChain.js"
 
 import {
     Paper,
@@ -70,16 +71,7 @@ export default function Ratchet(props){
     var totalElements = rootKeyFlowElements.concat(chainFlowElements).concat(edges); 
     
     const onElementClick = (event, element) => {
-        // console.log('click', element.data.rootkey);
         console.log('click', props.clientName); 
-        // if (props.ratchet.chainHistory[abToS(element.data.rootkey)] !== undefined){
-        //     console.log('successly found chain!')
-        //     const chain = props.ratchet.chainHistory[abToS(element.data.rootkey)]; 
-        //     setCurrentShowingChain(chain); 
-        //     setIsChainShowing(true); 
-        // } else {
-        //     console.log('no chain!')
-        // }
     }
 
     function onRootKeyClick(rootKey) {
@@ -100,7 +92,7 @@ export default function Ratchet(props){
     const showChain = () => {
         if (isChainShowing && currentShowingChain !== null) {
             return (
-                <Chain chain={currentShowingChain}/>
+                <FancyChain chain={currentShowingChain}/>
             )
         }
         else if (isChainShowing){
@@ -113,7 +105,7 @@ export default function Ratchet(props){
     return (
         <Paper>
             {props.ratchet.rootKeyHistory.map((item, index) => { return (
-                <Key key={index} desc={index} keyArray={item} onClick={() => onRootKeyClick(item)}></Key>
+                <Key  key={index} desc={index} keyArray={item} onClick={() => onRootKeyClick(item)}></Key>
                 )
             })}
             <Key desc="current" keyArray={props.ratchet.rootKey} onClick={() => onRootKeyClick(props.ratchet.rootKey)}></Key>
