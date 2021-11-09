@@ -26,7 +26,6 @@ export default function Session(props){
     return (
         <div className="sessionType">
             <Paper>
-            <Typography>{props.name}'s session</Typography>
             <Ratchet clientName={props.name} ratchet = {props.session.currentRatchet}/>
             {/* {props.session.chains !== undefined && chains()} */}
             </Paper>

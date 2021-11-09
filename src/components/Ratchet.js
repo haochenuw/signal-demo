@@ -26,7 +26,7 @@ import { isConstructorDeclaration } from "typescript";
 export default function Ratchet(props){
     const [currentShowingChain, setCurrentShowingChain] = useState(null);
     const [isChainShowing, setIsChainShowing] = useState(false);
-
+    const [selectedRootKey, setSelectedRootKey] = useState(null); 
     console.log('ratchet renders with ', props.ratchet); 
 
     var rootKeyFlowElements = props.ratchet.rootKeyHistory.map((item, index) => {
@@ -77,7 +77,7 @@ export default function Ratchet(props){
     function onRootKeyClick(rootKey) {
         const rootKeyString = abToS(rootKey); 
         console.log("rootKey clicked", rootKeyString)
-
+        setSelectedRootKey(rootKey); 
         if (props.ratchet.chainHistory[rootKeyString] !== undefined){
             console.log('successly found chain!')
             const chain = props.ratchet.chainHistory[rootKeyString]; 
@@ -89,7 +89,7 @@ export default function Ratchet(props){
         }
     }
 
-    const showChain = () => {
+    const chainInfoPanel = () => {
         if (isChainShowing && currentShowingChain !== null) {
             return (
                 <FancyChain chain={currentShowingChain}/>
@@ -103,13 +103,12 @@ export default function Ratchet(props){
 
 
     return (
-        <Paper>
+        <>
+            <h2>RootKey Info</h2>
             {props.ratchet.rootKeyHistory.map((item, index) => { return (
-                <Key  key={index} desc={index} keyArray={item} onClick={() => onRootKeyClick(item)}></Key>
+                <Key selected={selectedRootKey === item} key={index} desc={index} keyArray={item} onClick={() => onRootKeyClick(item)}></Key>
                 )
             })}
-            <Key desc="current" keyArray={props.ratchet.rootKey} onClick={() => onRootKeyClick(props.ratchet.rootKey)}></Key>
-
             {/* <p>
                 Previous counter {props.ratchet.previousCounter}
             </p>
@@ -122,8 +121,7 @@ export default function Ratchet(props){
                 elements={totalElements}
                 key={props.clientName} />
             </div> */}
-            {showChain()}
-
-        </Paper>
+            {chainInfoPanel()}
+        </>
     )
 }

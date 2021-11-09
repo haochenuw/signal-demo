@@ -14,6 +14,7 @@ export default function FancyChain(props) {
     }
     return(
         <>
+            <h2>Chain Info</h2>
             <Key desc={"chain key"} keyArray = {props.chain.chainKey.key} onclick={() => handleOnClick()}/>
             {showMessageKeys && Object.keys(props.chain.messageKeys).map(id => (
                 <Key key={id} desc={"message key"} keyArray = {props.chain.messageKeys[id]}/>
