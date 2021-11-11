@@ -26,7 +26,7 @@ export default function Session(props){
     return (
         <div className="sessionType">
             <Paper>
-            <Ratchet clientName={props.name} ratchet = {props.session.currentRatchet}/>
+            <Ratchet clientName={props.name} ratchet = {props.session.currentRatchet} chains={props.session.chains}/>
             {/* {props.session.chains !== undefined && chains()} */}
             </Paper>
         </div>

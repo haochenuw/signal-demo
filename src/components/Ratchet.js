@@ -78,9 +78,9 @@ export default function Ratchet(props){
         const rootKeyString = abToS(rootKey); 
         console.log("rootKey clicked", rootKeyString)
         setSelectedRootKey(rootKey); 
-        if (props.ratchet.chainHistory[rootKeyString] !== undefined){
+        const chain = props.chains[props.ratchet.rootKeyToEphemeralKeyMapping[rootKeyString]]; 
+        if (chain !== undefined){
             console.log('successly found chain!')
-            const chain = props.ratchet.chainHistory[rootKeyString]; 
             setCurrentShowingChain(chain); 
             setIsChainShowing(true); 
         } else {

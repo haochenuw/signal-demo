@@ -14,18 +14,19 @@ export default function FancyChain(props) {
     const handleOnClick = () => {
         setShowMessageKeys(!showMessageKeys)
     }
+    const chainTypeStr = props.chain.chainType === 1 ? "SENDING" : "RECEIVING"; 
     return(
         <>
-            <h2>Chain Info</h2>
+            <h2>Chain Type: {chainTypeStr}</h2>
             <Button onClick={() => {
                 handleOnClick(); 
                 console.log("clicked toggle message key, length = " + Object.keys(props.chain.messageKeys).length)
             }}>Toggle message keys</Button>
             {props.chain.chainKeyHistory.map((item, index) => (
-                <Key key={index} desc={"ck" + index} keyArray = {item}/>
+                <Key key={index} desc={"chain key " + index} keyArray = {item}/>
             ))}
             {showMessageKeys && Object.keys(props.chain.messageKeys).map(id => (
-                <Key key={id} desc={"message key"} keyArray = {props.chain.messageKeys[id]}/>
+                <Key key={id} desc={"message key " + id} keyArray = {props.chain.messageKeys[id]}/>
             ))}
         </>
     )
