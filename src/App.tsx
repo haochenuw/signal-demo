@@ -38,11 +38,13 @@ import { isConstructorDeclaration } from "typescript";
 import ClientView from "./components/ClientView";
 
 const initialStory =
-    "# Start using the demo to see what is happening in the code";
+    "# Click on a keyword to learn more";
 const createidMD = require("./createid.md");
 const startSessionWithAMD = require("./start-session-with-a.md");
 const startSessionWithBMD = require("./start-session-with-b.md");
 const sendMessageMD = require("./send-message.md");
+const sessionMD = require("./markdown/sessions.md");
+const registerMD = require("./markdown/register.md");
 
 
 
@@ -403,41 +405,33 @@ function App() {
         await updateAllSessions();
     };
 
-    const sendMessageControl = (to: string) => {
-        const value = to === aliceName ? brunhildeTyping : adalheidTyping;
-        const onTextChange =
-            to === aliceName ? setBrunhildeTyping : setAdalheidTyping;
-        return (
-            <Grid item xs={12} key="input">
-                <Paper className={classes.paper}>
-                    <TextField
-                        id="outlined-multiline-static"
-                        label={`Message ${to}`}
-                        multiline
-                        value={value}
-                        onChange={(event) => {
-                            onTextChange(event.target.value);
-                        }}
-                        variant="outlined"
-                    ></TextField>
-                    <Button
-                        onClick={() => encryptAndSendMessage(to, value)}
-                        variant="contained"
-                        className={classes.buttonitem}
-                    >
-                        {" "}
-                        <SendIcon />
-                    </Button>
-                </Paper>
-            </Grid>
-        );
-    };
-
     return (
         <div className="App">
             <Paper className={classes.paper}>
                 <Grid container spacing={2} className={classes.container}>
-                    <Grid item xs={4}>
+                    <Grid item xs={12}>
+                        <Paper className={classes.paper}>
+                            <Typography variant="h3" component="h3" gutterBottom>
+                                Live Demo of the Signal Protocol!
+                            </Typography>
+                            
+                            <Button variant="contained" color='primary' onClick={() => {updateStory(registerMD)}}>Overview</Button>
+                            <Button variant="contained" color='primary' onClick={() => {updateStory(registerMD)}}>registration</Button>
+                            <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>session</Button>
+                            <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>initialize a session</Button>
+                            <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>Message Keys</Button>
+                            <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>Chain</Button>
+                            <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>RootKey</Button>
+                            
+                            <ReactMarkdown
+                                source={story}
+                                className={classes.story}
+                                renderers={{ code: CodeBlock }}
+                            />
+                            {showPendingMessages()}
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={6}>
                         <ClientView
                             clientName={aliceName}
                             otherClientName={bobName}
@@ -447,20 +441,7 @@ function App() {
                             sendMessageFunc={sendMessage}
                         />
                     </Grid>
-                    <Grid item xs={4}>
-                        <Paper className={classes.paper}>
-                            <Typography variant="h3" component="h3" gutterBottom>
-                                Live Demo of the Signal Protocol!
-                            </Typography>
-                            <ReactMarkdown
-                                source={story}
-                                className={classes.story}
-                                renderers={{ code: CodeBlock }}
-                            />
-                            {showPendingMessages()}
-                        </Paper>
-                    </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6}>
                         <ClientView
                             clientName={bobName}
                             otherClientName={aliceName}
