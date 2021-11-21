@@ -25,17 +25,13 @@ import {
     Chip,
     TextField,
 } from "@material-ui/core";
-import SendIcon from "@material-ui/icons/Send";
 
 import { SignalProtocolStore } from "./storage-type";
 import { SignalDirectory, FullDirectoryEntry } from "./signal-directory";
-import CodeBlock from "./code-block";
-import Key from "./components/Key";
-import Session from "./components/Session";
 
-import { doStuff, getSessionsFrom, tob64Str } from "./util";
-import { isConstructorDeclaration } from "typescript";
+import {getSessionsFrom, tob64Str } from "./util";
 import ClientView from "./components/ClientView";
+import InfoPanel from "./components/InfoPanel";
 
 const initialStory =
     "# Click on a keyword to learn more";
@@ -423,11 +419,11 @@ function App() {
                             <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>Chain</Button>
                             <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>RootKey</Button>
                             
-                            <ReactMarkdown
+                            {/* <ReactMarkdown
                                 source={story}
                                 className={classes.story}
                                 renderers={{ code: CodeBlock }}
-                            />
+                            /> */}
                             {showPendingMessages()}
                         </Paper>
                     </Grid>
@@ -451,8 +447,10 @@ function App() {
                             sendMessageFunc={sendMessage}
                         />
                     </Grid>
+
                 </Grid>
             </Paper>
+            <InfoPanel selectedInfo="registration"/>
         </div>
     );
 }

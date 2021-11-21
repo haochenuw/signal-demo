@@ -23,7 +23,7 @@ export default function FancyChain(props) {
             <Button color='primary' onClick={() => {
                 handleOnClick(); 
                 console.log("clicked toggle message key, length = " + Object.keys(props.chain.messageKeys).length)
-            }}>Toggle message keys</Button>
+            }}>Show/Hide Message keys</Button>
             <Grid container spacing={2} justify="center">
                 <Grid item xs={6}>
                 {props.chain.chainKeyHistory.map((item, index) => (
