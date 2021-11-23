@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-
-import ReactMarkdown from "react-markdown";
 import PubSub from 'pubsub-js'
-
+import ProgressBar from 'react-bootstrap/ProgressBar'
+import 'bootstrap/dist/css/bootstrap.min.css'; // Needed for progress bar to show up!
 import {
     KeyHelper,
     SignedPublicPreKeyType,
@@ -14,35 +13,36 @@ import {
     MessageType,
     SessionType,
 } from "@privacyresearch/libsignal-protocol-typescript";
+import styled from 'styled-components'
 
 import "./App.css";
 import {
     Paper,
     Grid,
-    Avatar,
     Typography,
     Button,
-    Chip,
-    TextField,
 } from "@material-ui/core";
 
 import { SignalProtocolStore } from "./storage-type";
 import { SignalDirectory, FullDirectoryEntry } from "./signal-directory";
 
-import {getSessionsFrom, tob64Str } from "./util";
+import {getSessionsFrom} from "./util";
 import ClientView from "./components/ClientView";
 import InfoPanel from "./components/InfoPanel";
 
 const initialStory =
     "# Click on a keyword to learn more";
 const createidMD = require("./createid.md");
-const startSessionWithAMD = require("./start-session-with-a.md");
 const startSessionWithBMD = require("./start-session-with-b.md");
 const sendMessageMD = require("./send-message.md");
-const sessionMD = require("./markdown/sessions.md");
-const registerMD = require("./markdown/register.md");
 
-
+const StyledProgressBar = styled(ProgressBar)`
+  color: palevioletred;
+  font-weight: bold;
+  height: 50px;
+  font-size: 40px;
+  width: 100%; 
+`;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -146,9 +146,6 @@ function App() {
     const [story, setStory] = useState(initialStory);
 
     const [aliceIdKeypair, setAliceIdKeypair] = useState(["", ""]);
-
-    const [aliceSessions, setAliceSessions] = useState<SessionType<ArrayBuffer>[]>([]);
-    const [bobSessions, setBobSessions] = useState<SessionType<ArrayBuffer>[]>([]);
 
     const classes = useStyles();
 
@@ -303,10 +300,8 @@ function App() {
     const updateAllSessions = async () => {
         var updatedSessionCipher = getSessionCipherForRemoteAddress(bobName);
         var newSessions = await getSessionsFrom(updatedSessionCipher);
-        setAliceSessions(newSessions);
         updatedSessionCipher = getSessionCipherForRemoteAddress(aliceName);
         newSessions = await getSessionsFrom(updatedSessionCipher);
-        setBobSessions(newSessions);
     }
 
     const displayMessages = (sender: string) => {
@@ -401,31 +396,20 @@ function App() {
         await updateAllSessions();
     };
 
+    const [entriesUnlocked, setEntriesUnlocked] = useState(0); 
+    const total = 20; 
+
     return (
         <div className="App">
             <Paper className={classes.paper}>
                 <Grid container spacing={2} className={classes.container}>
                     <Grid item xs={12}>
-                        <Paper className={classes.paper}>
-                            <Typography variant="h3" component="h3" gutterBottom>
-                                Live Demo of the Signal Protocol!
-                            </Typography>
-                            
-                            <Button variant="contained" color='primary' onClick={() => {updateStory(registerMD)}}>Overview</Button>
-                            <Button variant="contained" color='primary' onClick={() => {updateStory(registerMD)}}>registration</Button>
-                            <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>session</Button>
-                            <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>initialize a session</Button>
-                            <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>Message Keys</Button>
-                            <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>Chain</Button>
-                            <Button variant="contained" color='primary' onClick={() => {updateStory(sessionMD)}}>RootKey</Button>
-                            
-                            {/* <ReactMarkdown
-                                source={story}
-                                className={classes.story}
-                                renderers={{ code: CodeBlock }}
-                            /> */}
-                            {showPendingMessages()}
-                        </Paper>
+                        <Typography variant="h3" component="h3" gutterBottom>
+                            Live Demo of the Signal Protocol!
+                        </Typography>
+                        {showPendingMessages()}
+                        <Typography variant="h4">{`${entriesUnlocked} wiki entiries unlocked`}</Typography>
+                        <StyledProgressBar striped={true} now={entriesUnlocked} max={total} min={0}/>
                     </Grid>
                     <Grid item xs={6}>
                         <ClientView
