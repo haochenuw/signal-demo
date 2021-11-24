@@ -164,6 +164,7 @@ export default function ClientView(props: Props) {
         let registerPayload = await createID(props.clientName, localStore);
         props.registerFunc(props.clientName, registerPayload); 
         setHasIdentity(true);
+        PubSub.publish('discoverTopic', 'registration');
     };
 
     const getSessionCipherForRemoteAddress = () => {
