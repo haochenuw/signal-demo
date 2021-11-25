@@ -217,6 +217,7 @@ export default function ClientView(props: Props) {
         // const aliceSessionCipher = new SessionCipher(adiStore, recipientAddress);
         setHasSession(true)
         await updateAllSessions() 
+        PubSub.publish('discoverTopic', 'x3dh');
         // updateStory(startSessionWithBMD);        
     }
 
@@ -276,6 +277,9 @@ export default function ClientView(props: Props) {
     const [selectedTab, setSelectedTab] = useState(0); 
     const handleChange = (_: any, newValue: number) => {
         setSelectedTab(newValue);
+        if (newValue == 2){
+            PubSub.publish('discoverTopic', 'session');
+        }
     };
 
     function TabPanel(props: any) {

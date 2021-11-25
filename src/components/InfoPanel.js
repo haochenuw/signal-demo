@@ -1,13 +1,8 @@
 import React, { useState, useEffect} from "react";
 import Info from "./Info"
-import PubSub from 'pubsub-js'
 
 import { styled } from '@material-ui/core/styles';
 import {textDescriptions, graphDefs} from "./consts"
-import X3DHFlow from "./X3DHFlow.js"
-import ChainKeyDiagram from "./ChainKeyDiagram";
-import SessionDiagram from "./SessionDiagram";
-// material UI imports 
 import {
     Tabs, 
     Tab
@@ -28,7 +23,27 @@ const topicsMetadata = [
     {
         key: "identityKey", 
         title: "identityKey", 
-    }
+    }, 
+    {
+        key: "x3dh", 
+        title: "X3DH",  
+    },
+    {
+        key: "session", 
+        title: "Session",  
+    },
+    {
+        key: "rootKey", 
+        title: "Root Key",  
+    },
+    {
+        key: "ratchet", 
+        title: "Ratchet",  
+    },
+    {
+        key: "chain", 
+        title: "Chain",  
+    },
 ]
 
 export default function InfoPanel(props) {
@@ -38,18 +53,6 @@ export default function InfoPanel(props) {
     const handleChange = (_, newValue) => {
         setSelectedTab(newValue);
     };
-
-    
-    // useEffect(()=>{
-    //     const topicDiscoverHandler = (key, topic) => {
-    //         console.log('discover!', topic); 
-    //         const newSet = new Set(discoveredTopics); 
-    //         newSet.add(topic);
-    //         setDiscoveredTopics(newSet);
-    //         console.log('updated topic list', JSON.stringify(discoveredTopics));
-    //     }
-    //     var subscription = PubSub.subscribe('discoverTopic', topicDiscoverHandler);
-    // }, []);
 
     return (
     <>
@@ -61,25 +64,15 @@ export default function InfoPanel(props) {
         indicatorColor="primary"
     >
         {topicsMetadata.map((item, index) => {
-            if (props.discoveredTopics.has(item.key)){
-                return (<StyledTab key={index} label="Registration"/>); 
+            if (props.discoveredTopics.includes(item.key)){
+                return (<StyledTab key={index} label={item.title}/>); 
             } else {
                 return <StyledTab  key={index} label="Locked"/>; 
             }
         })}
-        {/* <StyledTab label="Registration"/>
-        <StyledTab label="Identity Key"/>
-        <StyledTab label="Prekey Bundle"/>
-        <StyledTab label="Root Key"/>
-        <StyledTab label="X3DH"/>
-        <StyledTab label="Chain Key"/>
-        <StyledTab label="Message Key"/>
-        <StyledTab label="Session"/>
-        <StyledTab label="Ratchet"/>
-        <StyledTab label="Chain"/> */}
     </Tabs>        
     {topicsMetadata.map((item, index) => {
-        if (selectedTab === index && props.discoveredTopics.has(item.key)){
+        if (selectedTab === index && props.discoveredTopics.includes(item.key)){
             return (<Info key={index} 
                           title={item.title} 
                           descriptions={textDescriptions[item.key]} 

@@ -144,10 +144,11 @@ function App() {
     const [brunhildeTyping, setBrunhildeTyping] = useState("");
 
     const [story, setStory] = useState(initialStory);
-
+    
     const [aliceIdKeypair, setAliceIdKeypair] = useState(["", ""]);
-    const [discoveredTopics, setDiscoveredTopics] = useState(new Set()); 
-
+    const [discoveredTopics, setDiscoveredTopics] = useState<string[]>([]); 
+    const [entriesUnlocked, setEntriesUnlocked] = useState(0); 
+    
     const classes = useStyles();
 
     const updateStory = async (url: string) => {
@@ -174,25 +175,25 @@ function App() {
         }
     }
 
-    useEffect(()=> {
-        // publish a topic asynchronously
-        PubSub.publish('MY TOPIC', 'hello world!');
-        console.log("published!"); 
-    }, []);
+    const topicDiscoverHandler = (key: any, topic:string) => {
+        console.log('get new topic: ', topic); 
+        console.log('current topics', discoveredTopics); 
+        if (discoveredTopics.includes(topic)){
+            console.log('already has topic')
+            return; 
+        } else{
+            console.log('does not have topic')
+            console.log(discoveredTopics)
+            setEntriesUnlocked((entriesUnlocked) => entriesUnlocked + 1); 
+            setDiscoveredTopics([...discoveredTopics, topic]);
+            // TODO set active panel
+        }
+    }
 
     useEffect(() => {
-        const topicDiscoverHandler = (key: any, topic:string) => {
-            const newSet = new Set(discoveredTopics); 
-            if (newSet.has(topic)){
-                return; 
-            }
-            setEntriesUnlocked(entriesUnlocked + 1); 
-            newSet.add(topic);
-            setDiscoveredTopics(newSet);
-            console.log('updated topic list', JSON.stringify(discoveredTopics));
-        }
+        PubSub.unsubscribe('discoverTopic');
         var subscription = PubSub.subscribe('discoverTopic', topicDiscoverHandler);
-    }, []);
+    }, [discoveredTopics]);
 
 
     const storeSomewhereSafe = (store: SignalProtocolStore) => (
@@ -379,7 +380,6 @@ function App() {
         await updateAllSessions();
     };
 
-    const [entriesUnlocked, setEntriesUnlocked] = useState(0); 
     const total = 20; 
 
     return (
@@ -393,6 +393,9 @@ function App() {
                         {showPendingMessages()}
                         <Typography variant="h4">{`${entriesUnlocked} wiki entiries unlocked!`}</Typography>
                         <StyledProgressBar striped={true} now={entriesUnlocked} max={total} min={0}/>
+                        {discoveredTopics.map(item => {
+                            return (<p>{item}</p>)
+                        })}
                     </Grid>
                     <Grid item xs={6}>
                         <ClientView

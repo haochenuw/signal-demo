@@ -15,13 +15,11 @@ import ReactFlow from 'react-flow-renderer';
 import React, { useState, useEffect } from "react";
 import Key from "./Key.js"
 import {abToS} from "../util.tsx"
-import Chain from "./Chain.js"
 import FancyChain from "./FancyChain.js"
 
 import {
     Paper,
   } from "@material-ui/core";
-import { isConstructorDeclaration } from "typescript";
 
 export default function Ratchet(props){
     const [currentShowingChain, setCurrentShowingChain] = useState(null);

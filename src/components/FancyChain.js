@@ -4,7 +4,7 @@
 //     messageKeys: { [key: number]: T }
 //     chainKeyHistory: Array<T>; 
 // }
-
+import PubSub from 'pubsub-js'
 import React, {useState} from "react"
 import Key from "./Key.js"
 import Button from '@material-ui/core/Button'
@@ -17,9 +17,14 @@ export default function FancyChain(props) {
         setShowMessageKeys(!showMessageKeys)
     }
     const chainTypeStr = props.chain.chainType === 1 ? "SENDING" : "RECEIVING"; 
+
+    const handleChainTitleClick = () => {
+        console.log('chain title clicked')
+        PubSub.publish('discoverTopic', 'chain');
+    }
     return(
         <>
-            <h2>Chain Type: {chainTypeStr}</h2>
+            <h2 onClick={()=> handleChainTitleClick()}>{chainTypeStr} Chain</h2>
             <Button color='primary' onClick={() => {
                 handleOnClick(); 
                 console.log("clicked toggle message key, length = " + Object.keys(props.chain.messageKeys).length)

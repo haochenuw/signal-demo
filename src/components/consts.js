@@ -26,6 +26,8 @@ export const textDescriptions = {
                 "The additioanl Diffie-Hellman uses a separate ephemeral private key that the client generates locally, and a ephemeral public key from the other end"] 
 }
 
+const spacing = 300; 
+
 export const graphDefs = {
     "registration": {
             nodes: [
@@ -41,6 +43,68 @@ export const graphDefs = {
             ]
     }, 
     "x3dh": {
-        
+        nodes: [
+            { id: 'node-1', content: 'their public identity key', coordinates: [0, 0], },
+            { id: 'node-2', content: 'their public signed prekey ', coordinates: [spacing, 0], },
+            { id: 'node-3', content: 'their public onetime prekey', coordinates: [spacing*2, 0], },
+            { id: 'node-4', content: 'our ephemeral private key', coordinates: [100, 200], },
+            { id: 'node-5', content: 'New Chain Key', coordinates: [100+spacing, 200], },
+          ],
+          links: [
+            { input: 'node-1',  output: 'node-4' },
+            { input: 'node-2',  output: 'node-3' },
+            { input: 'node-2',  output: 'node-4' },
+          ]
+    }, 
+    "session": {
+        nodes: [
+        { id: 'ratchet-1', content: 'Ratchet_1', coordinates: [250, 0], },
+        { id: 'ratchet-2', content: 'Ratchet_2', coordinates: [250, 100], },
+        { id: 'ratchet-3', content: 'Ratchet_3', coordinates: [250, 200], },
+        { id: 'ratchet-4', content: 'Ratchet_4', coordinates: [250, 300], },
+        { id: 'chain-1', content: 'Chain_1', coordinates: [400, 20], },
+        { id: 'chain-2', content: 'Chain_2', coordinates: [400, 120], },
+        { id: 'chain-3', content: 'Chain_3', coordinates: [400, 220], },
+      ],
+      links: [
+        { input: 'ratchet-1',  output: 'ratchet-2' },
+        { input: 'ratchet-2',  output: 'ratchet-3' },
+        { input: 'ratchet-3',  output: 'ratchet-4' },
+        { input: 'ratchet-1',  output: 'chain-1' },
+        { input: 'ratchet-2',  output: 'chain-2' },
+        { input: 'ratchet-3',  output: 'chain-3' },
+      ]
+    }, 
+    "chainKey": {
+        nodes: [
+        { id: 'node-1', content: 'Old Chain Key', coordinates: [250, 60], },
+        { id: 'node-2', content: 'KDF', coordinates: [250, 200], },
+        { id: 'node-3', content: 'Message Key', coordinates: [350, 200], },
+        { id: 'node-4', content: 'New Chain Key', coordinates: [250, 320], },
+      ],
+      links: [
+        { input: 'node-1',  output: 'node-2' },
+        { input: 'node-2',  output: 'node-3' },
+        { input: 'node-2',  output: 'node-4' },
+      ]
+    }, 
+    "chain": {
+        nodes: [
+            { id: 'chainKey-1', content: 'chainKey_1', coordinates: [0, 0], },
+            { id: 'chainKey-2', content: 'chainKey_2', coordinates: [spacing, 0], },
+            { id: 'chainKey-3', content: 'chainKey_3', coordinates: [spacing*2, 0], },
+            { id: 'chainKey-4', content: 'chainKey_4', coordinates: [spacing*3, 0], },
+            { id: 'messageKey-1', content: 'messageKey_1', coordinates: [spacing/2, 200], },
+            { id: 'messageKey-2', content: 'messageKey_2', coordinates: [spacing/2 + spacing, 200], },
+            { id: 'messageKey-3', content: 'messageKey_3', coordinates: [spacing/2 + spacing*2, 200], },
+          ],
+          links: [
+            { input: 'chainKey-1',  output: 'chainKey-2' },
+            { input: 'chainKey-2',  output: 'chainKey-3' },
+            { input: 'chainKey-3',  output: 'chainKey-4' },
+            { input: 'chainKey-1',  output: 'messageKey-1' },
+            { input: 'chainKey-2',  output: 'messageKey-2' },
+            { input: 'chainKey-3',  output: 'messageKey-3' },
+          ]
     }
 }
