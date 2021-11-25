@@ -35,23 +35,21 @@ export default function InfoPanel(props) {
     
     const [selectedTab, setSelectedTab] = useState(0); 
 
-    const [discoveredTopics, setDiscoveredTopics] = useState(new Set()); 
-
     const handleChange = (_, newValue) => {
         setSelectedTab(newValue);
     };
 
     
-    useEffect(()=>{
-        const topicDiscoverHandler = (key, topic) => {
-            console.log('discover!', topic); 
-            const newSet = new Set(discoveredTopics); 
-            newSet.add(topic);
-            setDiscoveredTopics(newSet);
-            console.log('updated topic list', JSON.stringify(discoveredTopics));
-        }
-        var subscription = PubSub.subscribe('discoverTopic', topicDiscoverHandler);
-    }, []);
+    // useEffect(()=>{
+    //     const topicDiscoverHandler = (key, topic) => {
+    //         console.log('discover!', topic); 
+    //         const newSet = new Set(discoveredTopics); 
+    //         newSet.add(topic);
+    //         setDiscoveredTopics(newSet);
+    //         console.log('updated topic list', JSON.stringify(discoveredTopics));
+    //     }
+    //     var subscription = PubSub.subscribe('discoverTopic', topicDiscoverHandler);
+    // }, []);
 
     return (
     <>
@@ -63,7 +61,7 @@ export default function InfoPanel(props) {
         indicatorColor="primary"
     >
         {topicsMetadata.map((item, index) => {
-            if (discoveredTopics.has(item.key)){
+            if (props.discoveredTopics.has(item.key)){
                 return (<StyledTab key={index} label="Registration"/>); 
             } else {
                 return <StyledTab  key={index} label="Locked"/>; 
@@ -81,7 +79,7 @@ export default function InfoPanel(props) {
         <StyledTab label="Chain"/> */}
     </Tabs>        
     {topicsMetadata.map((item, index) => {
-        if (selectedTab === index && discoveredTopics.has(item.key)){
+        if (selectedTab === index && props.discoveredTopics.has(item.key)){
             return (<Info key={index} 
                           title={item.title} 
                           descriptions={textDescriptions[item.key]} 

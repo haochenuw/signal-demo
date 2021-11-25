@@ -40,4 +40,7 @@ export const graphDefs = {
               { input: 'node-2',  output: 'node-4' },
             ]
     }, 
+    "x3dh": {
+        
+    }
 }

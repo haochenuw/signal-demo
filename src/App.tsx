@@ -146,6 +146,7 @@ function App() {
     const [story, setStory] = useState(initialStory);
 
     const [aliceIdKeypair, setAliceIdKeypair] = useState(["", ""]);
+    const [discoveredTopics, setDiscoveredTopics] = useState(new Set()); 
 
     const classes = useStyles();
 
@@ -179,38 +180,20 @@ function App() {
         console.log("published!"); 
     }, []);
 
-    // const readMessage = async (msg: ChatMessage, cipher: SessionCipher) => {
-    //     let plaintext: ArrayBuffer = new Uint8Array().buffer;
-    //     if (msg.message.type === 3) {
-    //         console.log({ preKeyMessage: msg })
-    //         //   console.log({ msg });
-    //         plaintext = await cipher.decryptPreKeyWhisperMessage(
-    //             msg.message.body!,
-    //             "binary"
-    //         );
-    //     } else if (msg.message.type === 1) {
-    //         console.log({ normalMessage: msg })
-    //         plaintext = await cipher.decryptWhisperMessage(
-    //             msg.message.body!,
-    //             "binary"
-    //         );
-    //     }
-    //     const stringPlaintext = new TextDecoder().decode(new Uint8Array(plaintext));
-    //     console.log(stringPlaintext);
+    useEffect(() => {
+        const topicDiscoverHandler = (key: any, topic:string) => {
+            const newSet = new Set(discoveredTopics); 
+            if (newSet.has(topic)){
+                return; 
+            }
+            setEntriesUnlocked(entriesUnlocked + 1); 
+            newSet.add(topic);
+            setDiscoveredTopics(newSet);
+            console.log('updated topic list', JSON.stringify(discoveredTopics));
+        }
+        var subscription = PubSub.subscribe('discoverTopic', topicDiscoverHandler);
+    }, []);
 
-    //     const { id, to, from } = msg;
-
-    //     if (to === aliceName) {
-    //         setaHasSession(true);
-    //     } else {
-    //         setbHasSession(true);
-    //     }
-
-
-    //     await updateAllSessions();
-
-    //     return { id, to, from, messageText: stringPlaintext };
-    // };
 
     const storeSomewhereSafe = (store: SignalProtocolStore) => (
         key: string,
@@ -408,7 +391,7 @@ function App() {
                             Live Demo of the Signal Protocol!
                         </Typography>
                         {showPendingMessages()}
-                        <Typography variant="h4">{`${entriesUnlocked} wiki entiries unlocked`}</Typography>
+                        <Typography variant="h4">{`${entriesUnlocked} wiki entiries unlocked!`}</Typography>
                         <StyledProgressBar striped={true} now={entriesUnlocked} max={total} min={0}/>
                     </Grid>
                     <Grid item xs={6}>
@@ -434,7 +417,7 @@ function App() {
 
                 </Grid>
             </Paper>
-            <InfoPanel selectedInfo="registration"/>
+            <InfoPanel selectedInfo="registration" discoveredTopics = {discoveredTopics}/>
         </div>
     );
 }
