@@ -25,3 +25,19 @@ export const textDescriptions = {
                 "The first rootkeys are the same thanks to X3DH", "The client derives each new rootkey using the entropy of the current rootkey, plus an additional Diffie-Hellman", 
                 "The additioanl Diffie-Hellman uses a separate ephemeral private key that the client generates locally, and a ephemeral public key from the other end"] 
 }
+
+export const graphDefs = {
+    "registration": {
+            nodes: [
+              { id: 'node-1', content: 'Old Chain Key', coordinates: [250, 60], },
+              { id: 'node-2', content: 'KDF', coordinates: [250, 200], },
+              { id: 'node-3', content: 'Message Key', coordinates: [350, 200], },
+              { id: 'node-4', content: 'New Chain Key', coordinates: [250, 320], },
+            ],
+            links: [
+              { input: 'node-1',  output: 'node-2' },
+              { input: 'node-2',  output: 'node-3' },
+              { input: 'node-2',  output: 'node-4' },
+            ]
+    }, 
+}

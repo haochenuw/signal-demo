@@ -28,7 +28,7 @@ import { SignalDirectory, FullDirectoryEntry } from "./signal-directory";
 
 import {getSessionsFrom} from "./util";
 import ClientView from "./components/ClientView";
-import InfoPanel from "./components/InfoPanel.tsx";
+import InfoPanel from "./components/InfoPanel.js";
 
 const initialStory =
     "# Click on a keyword to learn more";

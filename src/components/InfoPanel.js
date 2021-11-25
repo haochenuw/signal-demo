@@ -3,7 +3,7 @@ import Info from "./Info"
 import PubSub from 'pubsub-js'
 
 import { styled } from '@material-ui/core/styles';
-import {textDescriptions} from "./consts"
+import {textDescriptions, graphDefs} from "./consts"
 import X3DHFlow from "./X3DHFlow.js"
 import ChainKeyDiagram from "./ChainKeyDiagram";
 import SessionDiagram from "./SessionDiagram";
@@ -12,20 +12,17 @@ import {
     Tabs, 
     Tab
 } from "@material-ui/core";
+import BeautifulDiagram from "./BeautifulDiagram";
 
 const StyledTab = styled(Tab)({
     borderBottom: '1px solid #e8e8e8',
     backgroundColor: '#1890ff',
 });
 
-interface Topic {
-    key: string;
-    title: string;
-}
 
-const topicsMetadata: Topic[] = [
+const topicsMetadata = [
     {
-        key: "", 
+        key: "registration", 
         title: "Registration", 
     }, 
     {
@@ -34,21 +31,23 @@ const topicsMetadata: Topic[] = [
     }
 ]
 
-export default function InfoPanel(props: any) {
+export default function InfoPanel(props) {
     
     const [selectedTab, setSelectedTab] = useState(0); 
 
-    const [discoveredTopics, setDiscoveredTopics] = useState<String[]>([]); 
+    const [discoveredTopics, setDiscoveredTopics] = useState(new Set()); 
 
-    const handleChange = (_: any, newValue: number) => {
+    const handleChange = (_, newValue) => {
         setSelectedTab(newValue);
     };
 
     
     useEffect(()=>{
-        const topicDiscoverHandler = (key: any, topic: String) => {
+        const topicDiscoverHandler = (key, topic) => {
             console.log('discover!', topic); 
-            setDiscoveredTopics(discoveredTopics => [...discoveredTopics, topic]);
+            const newSet = new Set(discoveredTopics); 
+            newSet.add(topic);
+            setDiscoveredTopics(newSet);
             console.log('updated topic list', JSON.stringify(discoveredTopics));
         }
         var subscription = PubSub.subscribe('discoverTopic', topicDiscoverHandler);
@@ -64,11 +63,9 @@ export default function InfoPanel(props: any) {
         indicatorColor="primary"
     >
         {topicsMetadata.map((item, index) => {
-            if (discoveredTopics.includes(item.key)){
-                console.log('got here')
+            if (discoveredTopics.has(item.key)){
                 return (<StyledTab key={index} label="Registration"/>); 
             } else {
-                console.log('got there')
                 return <StyledTab  key={index} label="Locked"/>; 
             }
         })}
@@ -84,8 +81,12 @@ export default function InfoPanel(props: any) {
         <StyledTab label="Chain"/> */}
     </Tabs>        
     {topicsMetadata.map((item, index) => {
-        if (selectedTab === index && discoveredTopics[item["key"]]){
-            return (<Info title={item["title"]} descriptions={textDescriptions[item["key"]]}/>); 
+        if (selectedTab === index && discoveredTopics.has(item.key)){
+            return (<Info key={index} 
+                          title={item.title} 
+                          descriptions={textDescriptions[item.key]} 
+                          graphNode={<BeautifulDiagram 
+                            graphDef={graphDefs[item.key]}/>}/>); 
         } else {
             return null; 
         }

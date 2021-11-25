@@ -23,6 +23,7 @@ const initialSchema = createSchema({
 export default function ChainKeyDiagram(props){    
     const UncontrolledDiagram = () => {
         // create diagrams schema
+        const initialSchema = createSchema(props.graphDef); 
         const [schema, { onChange }] = useSchema(initialSchema);
       
         return (
