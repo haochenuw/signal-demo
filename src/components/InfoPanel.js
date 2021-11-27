@@ -21,6 +21,10 @@ const topicsMetadata = [
         title: "Registration", 
     }, 
     {
+        key: "preKeyBundle", 
+        title: "PreKey Bundle", 
+    }, 
+    {
         key: "identityKey", 
         title: "identityKey", 
     }, 
@@ -43,6 +47,34 @@ const topicsMetadata = [
     {
         key: "chain", 
         title: "Chain",  
+    },
+    {
+        key: "preKeyMessage", 
+        title: "PreKey Message",  
+    },
+    {
+        key: "whisperMessage", 
+        title: "Whisper Message",  
+    },
+    {
+        key: "encryption", 
+        title: "Encryption",  
+    },
+    {
+        key: "decryption", 
+        title: "Decryption",  
+    },
+    {
+        key: "chainKey", 
+        title: "Chain Key",  
+    },
+    {
+        key: "messageKey", 
+        title: "Message Key",  
+    },
+    {
+        key: "identityKey", 
+        title: "Identity Key",  
     },
 ]
 
@@ -82,16 +114,6 @@ export default function InfoPanel(props) {
             return null; 
         }
     })}
-    {/* {selectedTab === 0 && <Info title="Registration" descriptions={textDescriptions["registration"]} graphNode={<X3DHFlow/>}/>}
-    {selectedTab === 1 && <IdentityKeyInfo/>}
-    {selectedTab === 2 && <Info title="PreKey Bundle" descriptions={textDescriptions["prekeyBundle"]} graphNode={<X3DHFlow/>}/>}
-    {selectedTab === 3 && <Info title="Root Key" descriptions={textDescriptions["rootKey"]} graphNode={<X3DHFlow/>}/>}
-    {selectedTab === 4 && <Info title="X3DH" descriptions={textDescriptions["x3dh"]} graphNode={<X3DHFlow/>}/>}
-    {selectedTab === 5 && <Info title="Chain Key" descriptions={textDescriptions["chainKey"]} graphNode={<ChainKeyDiagram/>} />}
-    {selectedTab === 6 && <Info title="Message Key" descriptions={textDescriptions["messageKey"]} />}
-    {selectedTab === 7 && <Info title="Session" descriptions={textDescriptions["session"]} graphNode={<SessionDiagram/>}/>}
-    {selectedTab === 8 && <Info title="Ratchet" descriptions={textDescriptions["ratchet"]} />}
-    {selectedTab === 9 && <Info title="Chain" descriptions={textDescriptions["chain"]} />} */}
     </>
     )
 }

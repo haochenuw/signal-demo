@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PubSub from 'pubsub-js'
+import Key from "./Key.js"
 
 // material UI imports 
 import {
@@ -13,7 +14,9 @@ import {
     Tab
 } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
-
+import {
+    KeyPairType,
+} from "@privacyresearch/libsignal-protocol-typescript";
 import { makeStyles } from "@material-ui/core/styles";
 
 import { SignalDirectory, FullDirectoryEntry} from "../signal-directory";
@@ -110,6 +113,7 @@ export default function ClientView(props: Props) {
     const [incomingMessages, setIncomingMessages] = useState<ChatMessage[]>([]); 
     const [processing, setProcessing] = useState(false);
     
+    const [identityKeypair, setIdentityKeypair] = useState<KeyPairType | null>(null);  
     const otherHasIdentity = props.otherHasIdentity;
     const otherClientAddress = new SignalProtocolAddress(props.otherClientName, 1);
 
@@ -124,6 +128,17 @@ export default function ClientView(props: Props) {
         }
         setIncomingMessages([...incomingMessages, message]);
     }
+    
+    async function fetchIdentityKey(){
+        const IKa = await localStore.getIdentityKeyPair();
+        if (IKa !== undefined){
+            console.log("setting id keypair")
+            setIdentityKeypair(IKa);
+        }
+    }
+    // useEffect(()=> {
+    //     fetchIdentityKey(); 
+    // }, );
 
     useEffect(()=>{
         var subscription = PubSub.subscribe('message', messageHandler);
@@ -165,6 +180,7 @@ export default function ClientView(props: Props) {
         props.registerFunc(props.clientName, registerPayload); 
         setHasIdentity(true);
         PubSub.publish('discoverTopic', 'registration');
+        fetchIdentityKey();
     };
 
     const getSessionCipherForRemoteAddress = () => {
@@ -229,7 +245,8 @@ export default function ClientView(props: Props) {
             new TextEncoder().encode(message).buffer
         );
         setDraftMessage(""); 
-        
+        PubSub.publish('discoverTopic', 'encryption');
+
         props.sendMessageFunc(to, from, ciphertext);
         
         console.log(props.clientName, `message sent!`)
@@ -282,24 +299,17 @@ export default function ClientView(props: Props) {
         }
     };
 
-    function TabPanel(props: any) {
-        const { children, value, index, ...other } = props;
-      
-        return (
-          <div
-            role="tabpanel"
-            hidden={value !== index}
-          >
-            {value === index && 
-                children
-            }
-          </div>
-        );
-      }
-      
+    const handleIdentityKeyClick = () => {
+        PubSub.publish('discoverTopic', 'identityKey');
+    }
+
     const identityPanel = () => {
+        
         return hasIdentity ? (
             <React.Fragment>
+                <h2 onClick={() => handleIdentityKeyClick()}>Identity Key</h2>
+                <Key desc={"identity private key "} keyArray = {identityKeypair?.privKey}/>
+                <Key desc={"identity public key "} keyArray = {identityKeypair?.pubKey}/>
                 <Chip
                     label={`${props.clientName}'s Registration ID: ${localStore.get(
                         "registrationID",

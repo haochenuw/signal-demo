@@ -11,7 +11,6 @@ import {
     PreKeyType,
     SessionCipher,
     MessageType,
-    SessionType,
 } from "@privacyresearch/libsignal-protocol-typescript";
 import styled from 'styled-components'
 
@@ -29,6 +28,7 @@ import { SignalDirectory, FullDirectoryEntry } from "./signal-directory";
 import {getSessionsFrom} from "./util";
 import ClientView from "./components/ClientView";
 import InfoPanel from "./components/InfoPanel.js";
+import ServerView from "./components/ServerView.js"
 
 const initialStory =
     "# Click on a keyword to learn more";
@@ -148,6 +148,8 @@ function App() {
     const [aliceIdKeypair, setAliceIdKeypair] = useState(["", ""]);
     const [discoveredTopics, setDiscoveredTopics] = useState<string[]>([]); 
     const [entriesUnlocked, setEntriesUnlocked] = useState(0); 
+    const [alicePreKeyBundle, setAlicePreKeyBundle] = useState<FullDirectoryEntry | null>(null); 
+    const [bobPreKeyBundle, setBobPreKeyBundle] = useState<FullDirectoryEntry | null>(null); 
     
     const classes = useStyles();
 
@@ -170,8 +172,11 @@ function App() {
         directory.storeKeyBundle(name, bundle);
         if (name === aliceName) {
             setAHasIdentity(true);
+            setAlicePreKeyBundle(bundle); 
+            console.log('got here -- pre key bundle')
         } else if (name === bobName) {
             setBHasIdentity(true);
+            setBobPreKeyBundle(bundle); 
         }
     }
 
@@ -317,6 +322,14 @@ function App() {
         )
     };
 
+    const handlePendingMessageClick = (type: number) => {
+        if (type === 3) {
+            PubSub.publish('discoverTopic', 'preKeyMessage');
+        } else {
+            PubSub.publish('discoverTopic', 'whisperMessage');
+        }
+    }
+
     const pendingMessageBody = () => {
        return messages.map((m) => (
             <React.Fragment>
@@ -324,7 +337,7 @@ function App() {
                     <Paper className={
                         m.message.type === 3 ? classes.preKeyMessage : classes.normalMessage
                     }>
-                        <Typography variant="body1">{m.from} - {m.to}; Id: {m.id}; Type:{m.message.type} </Typography>
+                        <Typography onClick={()=>handlePendingMessageClick(m.message.type)} variant="body1">{m.from} - {m.to}; Id: {m.id}; Type:{m.message.type} </Typography>
                     </Paper>
                 </Grid>
                 <Grid xs = {2} item>
@@ -385,7 +398,7 @@ function App() {
     return (
         <div className="App">
             <Paper className={classes.paper}>
-                <Grid container spacing={2} className={classes.container}>
+                <Grid container className={classes.container}>
                     <Grid item xs={12}>
                         <Typography variant="h3" component="h3" gutterBottom>
                             Live Demo of the Signal Protocol!
@@ -393,11 +406,8 @@ function App() {
                         {showPendingMessages()}
                         <Typography variant="h4">{`${entriesUnlocked} wiki entiries unlocked!`}</Typography>
                         <StyledProgressBar striped={true} now={entriesUnlocked} max={total} min={0}/>
-                        {discoveredTopics.map(item => {
-                            return (<p>{item}</p>)
-                        })}
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
                         <ClientView
                             clientName={aliceName}
                             otherClientName={bobName}
@@ -407,7 +417,10 @@ function App() {
                             sendMessageFunc={sendMessage}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
+                        <ServerView alicePreKeyBundle={alicePreKeyBundle} bobPreKeyBundle={bobPreKeyBundle}/>
+                    </Grid>
+                    <Grid item xs={4}>
                         <ClientView
                             clientName={bobName}
                             otherClientName={aliceName}
@@ -419,8 +432,8 @@ function App() {
                     </Grid>
 
                 </Grid>
-            </Paper>
             <InfoPanel selectedInfo="registration" discoveredTopics = {discoveredTopics}/>
+            </Paper>
         </div>
     );
 }

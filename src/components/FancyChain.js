@@ -22,6 +22,15 @@ export default function FancyChain(props) {
         console.log('chain title clicked')
         PubSub.publish('discoverTopic', 'chain');
     }
+
+    const handleMessageKeyClick = () => {
+        PubSub.publish('discoverTopic', 'messageKey');
+    }
+
+    const handleChainKeyClick = () => {
+        PubSub.publish('discoverTopic', 'chainKey');
+    }
+
     return(
         <>
             <h2 onClick={()=> handleChainTitleClick()}>{chainTypeStr} Chain</h2>
@@ -32,12 +41,12 @@ export default function FancyChain(props) {
             <Grid container spacing={2} justify="center">
                 <Grid item xs={6}>
                 {props.chain.chainKeyHistory.map((item, index) => (
-                    <Key key={index} desc={"chain key " + index} keyArray = {item}/>
+                    <Key onClick={() => handleChainKeyClick()} key={index} desc={"chain key " + index} keyArray = {item}/>
                 ))}
                 </Grid>
                 <Grid item>
                     {showMessageKeys && Object.keys(props.chain.messageKeys).map(id => (
-                        <Key key={id} desc={"message key " + id} keyArray = {props.chain.messageKeys[id]}/>
+                        <Key onClick={() => handleMessageKeyClick()} key={id} desc={"message key " + id} keyArray = {props.chain.messageKeys[id]}/>
                     ))}
                 </Grid>
             </Grid>

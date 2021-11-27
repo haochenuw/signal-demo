@@ -5,21 +5,12 @@
 //     previousCounter: number
 //     added?: number //timestamp
 // }
-import {
-    List,
-} from "@material-ui/core";
-
-import ListItem from '@material-ui/core/ListItem';
-import ReactFlow from 'react-flow-renderer';
+import PubSub from 'pubsub-js'
 
 import React, { useState, useEffect } from "react";
 import Key from "./Key.js"
 import {abToS} from "../util.tsx"
 import FancyChain from "./FancyChain.js"
-
-import {
-    Paper,
-  } from "@material-ui/core";
 
 export default function Ratchet(props){
     const [currentShowingChain, setCurrentShowingChain] = useState(null);
@@ -66,11 +57,6 @@ export default function Ratchet(props){
         })
     }
 
-    var totalElements = rootKeyFlowElements.concat(chainFlowElements).concat(edges); 
-    
-    const onElementClick = (event, element) => {
-        console.log('click', props.clientName); 
-    }
 
     function onRootKeyClick(rootKey) {
         const rootKeyString = abToS(rootKey); 
@@ -85,6 +71,7 @@ export default function Ratchet(props){
             console.log('no chain!')
             setCurrentShowingChain(null); 
         }
+        PubSub.publish('discoverTopic', 'rootKey');
     }
 
     const chainInfoPanel = () => {
@@ -99,26 +86,13 @@ export default function Ratchet(props){
         return (<div>Click on a root key to show the chain</div>)
     }
 
-
     return (
         <>
-            <h2>RootKey Info</h2>
+            <h2>Root Keys</h2>
             {props.ratchet.rootKeyHistory.map((item, index) => { return (
                 <Key selected={selectedRootKey === item} key={index} desc={index} keyArray={item} onClick={() => onRootKeyClick(item)}></Key>
                 )
             })}
-            {/* <p>
-                Previous counter {props.ratchet.previousCounter}
-            </p>
-            <p>
-                Last Remote Ephemeral Key: {tob64Str(props.ratchet.lastRemoteEphemeralKey)}
-            </p> */}
-            {/* <div style={{ height: 500 }}>
-                <ReactFlow 
-                onElementClick={onElementClick}
-                elements={totalElements}
-                key={props.clientName} />
-            </div> */}
             {chainInfoPanel()}
         </>
     )
