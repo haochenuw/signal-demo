@@ -3,20 +3,18 @@ import React from "react"
 import { uint8ArrayToString } from "../storage-type";
 import { tob64Str } from "../util";
 import '../styles/styles.css';
+import Box from '@mui/material/Box';
+
 const { Generator } = require('contrast-color-generator');
 let generator = new Generator(180, {minimumRatio: 4.5});
 // show the last 10 chars of string 
-
 export default function Key(props) {
-    var clickableKeyStyle = {
-        cursor: 'pointer', 
-    }
-    if (props.onClick === undefined){
-        clickableKeyStyle = {}
-    } 
-    // TODO: this is not working yet 
+
     const selected = props.selected ? "selected" : ""
     const classes = `key ${selected}`
+    const display = props.display ?? "block"; 
+    const handleOnClickAdd = () => {}
+
     if (props.keyArray) {
         let keyBase64Str = tob64Str(props.keyArray)
         let u8rep = new Uint8Array(props.keyArray)
@@ -26,9 +24,10 @@ export default function Key(props) {
             background: generator.generate(colorHex).hexStr, 
             margin: 10, 
             padding: 10, 
+            display: display
         }
         return (
-            <div style={clickableKeyStyle} className={classes} style={keyStyle} onClick={props.onClick}>
+            <div className={classes} style={keyStyle} onClick={props.onClick}>
                 {props.desc}: {keyBase64Str.slice(-10)} 
             </div>
         )

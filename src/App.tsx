@@ -29,12 +29,12 @@ import {getSessionsFrom} from "./util";
 import ClientView from "./components/ClientView";
 import InfoPanel from "./components/InfoPanel.js";
 import ServerView from "./components/ServerView.js"
+import SignalMessage from "./components/SignalMessage.js"
 
 const initialStory =
     "# Click on a keyword to learn more";
 const createidMD = require("./createid.md");
 const startSessionWithBMD = require("./start-session-with-b.md");
-const sendMessageMD = require("./send-message.md");
 
 const StyledProgressBar = styled(ProgressBar)`
   color: palevioletred;
@@ -293,52 +293,27 @@ function App() {
         newSessions = await getSessionsFrom(updatedSessionCipher);
     }
 
-    const displayMessages = (sender: string) => {
-        return processedMessages.map((m) => (
-            <React.Fragment>
-                {m.from === sender ? <Grid xs={2} item /> : <div />}
-                <Grid xs={10} item key={m.id}>
-                    <Paper
-                        className={
-                            m.from === sender ? classes.outgoingmessage : classes.message
-                        }
-                    >
-                        <Typography variant="body1">{m.messageText}</Typography>
-                    </Paper>
-                </Grid>
-                {m.from !== sender ? <Grid xs={2} item /> : <div />}
-            </React.Fragment>
-        ));
-    };
-
     function showPendingMessages() {
         return  (
             <Grid container spacing={2}>            
                 <Grid xs={12} item>
-                <Typography>Pending Messages</Typography>
+                <Typography variant="h2">Pending Messages</Typography>
                 </Grid>
                 {pendingMessageBody()}
             </Grid>
         )
     };
 
-    const handlePendingMessageClick = (type: number) => {
-        if (type === 3) {
-            PubSub.publish('discoverTopic', 'preKeyMessage');
-        } else {
-            PubSub.publish('discoverTopic', 'whisperMessage');
-        }
-    }
-
     const pendingMessageBody = () => {
        return messages.map((m) => (
             <React.Fragment>
                 <Grid xs = {6} item key={m.id}>
-                    <Paper className={
+                    <SignalMessage m={m}/>
+                    {/* <Paper className={
                         m.message.type === 3 ? classes.preKeyMessage : classes.normalMessage
                     }>
                         <Typography onClick={()=>handlePendingMessageClick(m.message.type)} variant="body1">{m.from} - {m.to}; Id: {m.id}; Type:{m.message.type} </Typography>
-                    </Paper>
+                    </Paper> */}
                 </Grid>
                 <Grid xs = {2} item>
                     <Button onClick={() => forwardMsg(m)}>Forward</Button>
@@ -374,23 +349,6 @@ function App() {
         const store = to === aliceName ? brunhildeStore : adiStore;
         const address = to === aliceName ? aliceAddress : brunhildeAddress;
         return new SessionCipher(store, address);
-    };
-
-    const encryptAndSendMessage = async (to: string, message: string) => {
-        console.log(`sending a encrypted message to ${to}`)
-        const cipher = getSessionCipherForRemoteAddress(to);
-        const from = to === aliceName ? bobName : aliceName;
-        const ciphertext = await cipher.encrypt(
-            new TextEncoder().encode(message).buffer
-        );
-        if (from === aliceName) {
-            setAdalheidTyping("");
-        } else {
-            setBrunhildeTyping("");
-        }
-        sendMessage(to, from, ciphertext);
-        updateStory(sendMessageMD);
-        await updateAllSessions();
     };
 
     const total = 20; 

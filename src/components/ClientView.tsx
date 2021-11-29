@@ -258,7 +258,6 @@ export default function ClientView(props: Props) {
             messageText: message 
         }
         setProcessedMessages([...processedMessages, localMessage]); 
-        // updateStory(sendMessageMD);
         await updateAllSessions();
     };
 

@@ -6,12 +6,17 @@
 //     added?: number //timestamp
 // }
 import PubSub from 'pubsub-js'
-
+import AddIcon from '@mui/icons-material/Add';
 import React, { useState, useEffect } from "react";
 import Key from "./Key.js"
 import {abToS} from "../util.tsx"
 import FancyChain from "./FancyChain.js"
-
+import {
+    Paper,
+    Grid,
+    Typography,
+    Button,
+} from "@material-ui/core";
 export default function Ratchet(props){
     const [currentShowingChain, setCurrentShowingChain] = useState(null);
     const [isChainShowing, setIsChainShowing] = useState(false);
@@ -86,13 +91,22 @@ export default function Ratchet(props){
         return (<div>Click on a root key to show the chain</div>)
     }
 
+    const handleClickAdd = (index) => {
+        console.log('index clicked', index) 
+    }
+
     return (
         <>
-            <h2>Root Keys</h2>
+            <h2>Ratchets</h2>
+            <Grid container>
             {props.ratchet.rootKeyHistory.map((item, index) => { return (
-                <Key selected={selectedRootKey === item} key={index} desc={index} keyArray={item} onClick={() => onRootKeyClick(item)}></Key>
+                <Grid item xs={12}>
+                <Key display='inline' selected={selectedRootKey === item} key={index} desc={"RootKey"} keyArray={item} onClick={() => onRootKeyClick(item)}></Key>
+                <Key display='inline' key={index} desc={"Ephemeral Keypair"} keyArray={item}></Key>
+                </Grid>
                 )
             })}
+            </Grid>
             {chainInfoPanel()}
         </>
     )
