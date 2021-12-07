@@ -3,7 +3,6 @@ import React from "react"
 import { uint8ArrayToString } from "../storage-type";
 import { tob64Str } from "../util";
 import '../styles/styles.css';
-import Box from '@mui/material/Box';
 
 const { Generator } = require('contrast-color-generator');
 let generator = new Generator(180, {minimumRatio: 4.5});
@@ -13,7 +12,6 @@ export default function Key(props) {
     const selected = props.selected ? "selected" : ""
     const classes = `key ${selected}`
     const display = props.display ?? "block"; 
-    const handleOnClickAdd = () => {}
 
     if (props.keyArray) {
         let keyBase64Str = tob64Str(props.keyArray)

@@ -17,6 +17,7 @@ import Key from "./Key.js"
 import { Typography, Button } from "@material-ui/core"
 import PubSub from 'pubsub-js'
 import {Collapse} from 'react-collapse';
+import styled from 'styled-components'
 
 import {
     PreKeyWhisperMessage, 
@@ -39,7 +40,6 @@ const decodeUtil = (buff) => {
 
 const decodeNormalMessageUtil = (messageBytes) => {
     const messageProto = messageBytes.slice(1, messageBytes.byteLength - 8)
-    const mac = messageBytes.slice(messageBytes.byteLength - 8, messageBytes.byteLength)
 
     const message = WhisperMessage.decode(new Uint8Array(messageProto))
     console.log('message', JSON.stringify(message))
@@ -59,6 +59,19 @@ function binaryStringToArrayBuffer(str) {
     return Uint8Array.from(bb).buffer
 }
 
+const StyledButton = styled(Button)`
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  width: 100px; 
+  background-color: black; 
+  margin: 5px; 
+  '&:hover': {
+    backgroundColor: '#0F2C67',
+    color: 'white',
+  },
+`;
+
 export default function SignalMessage(props){
     const [isContentOpen, setIsContentOpen] = useState(false); 
 
@@ -76,8 +89,13 @@ export default function SignalMessage(props){
 
     const content = () => {
         if (messageType === SignalMessageType.PreKeyMessage){
-            const proto = decodeUtil(buffer);
-            return (<Key desc="Base Key" keyArray={proto.baseKey}></Key>
+            const prekeyProto = decodeUtil(buffer);
+            const remoteEphemeralKey = decodeNormalMessageUtil(prekeyProto.message).ephemeralKey; 
+            return (
+                <>
+                <Key desc="Base Key" onClick={() => {PubSub.publish('discoverTopic', 'baseKey');}}keyArray={prekeyProto.baseKey}></Key>
+                <Key desc="Ephemeral public Key" keyArray={remoteEphemeralKey}></Key>
+                </>
             )
         }
         else {
@@ -89,10 +107,10 @@ export default function SignalMessage(props){
         <div>
             <Typography 
                 onClick={()=>handlePendingMessageClick(messageType)} 
-                variant="h4">
+                variant="body">
                 MESSAGE {props.m.id}: {props.m.from} TO {props.m.to} Type:{messageType} 
             </Typography>
-            <Button onClick={() => setIsContentOpen(!isContentOpen)}>Show</Button>
+            <StyledButton onClick={() => setIsContentOpen(!isContentOpen)}>Show</StyledButton>
             <Collapse isOpened={isContentOpen}>
             {content()}
             </Collapse>

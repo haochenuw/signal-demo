@@ -5,7 +5,8 @@ import { styled } from '@material-ui/core/styles';
 import {textDescriptions, graphDefs} from "./consts"
 import {
     Tabs, 
-    Tab
+    Tab,
+    Grid,
 } from "@material-ui/core";
 import BeautifulDiagram from "./BeautifulDiagram";
 
@@ -87,33 +88,37 @@ export default function InfoPanel(props) {
     };
 
     return (
-    <>
-    <Tabs 
-        value={selectedTab} 
-        onChange={handleChange} 
-        aria-label="basic tabs example"
-        orientation="vertical"
-        indicatorColor="primary"
-    >
+    <Grid container direction="row" spacing={10}> 
+        <Grid item xs={2}>
+        <Tabs 
+            value={selectedTab} 
+            onChange={handleChange} 
+            aria-label="basic tabs example"
+            orientation="vertical"
+            indicatorColor="primary"
+        >
+            {topicsMetadata.map((item, index) => {
+                if (props.discoveredTopics.includes(item.key)){
+                    return (<StyledTab key={index} label={item.title}/>); 
+                } else {
+                    return <StyledTab  key={index} label="Locked"/>; 
+                }
+            })}
+        </Tabs>   
+        </Grid>
+        <Grid item xs={10}>     
         {topicsMetadata.map((item, index) => {
-            if (props.discoveredTopics.includes(item.key)){
-                return (<StyledTab key={index} label={item.title}/>); 
+            if (selectedTab === index && props.discoveredTopics.includes(item.key)){
+                return (<Info key={index} 
+                            title={item.title} 
+                            descriptions={textDescriptions[item.key]} 
+                            graphNode={<BeautifulDiagram 
+                                graphDef={graphDefs[item.key]}/>}/>); 
             } else {
-                return <StyledTab  key={index} label="Locked"/>; 
+                return null; 
             }
         })}
-    </Tabs>        
-    {topicsMetadata.map((item, index) => {
-        if (selectedTab === index && props.discoveredTopics.includes(item.key)){
-            return (<Info key={index} 
-                          title={item.title} 
-                          descriptions={textDescriptions[item.key]} 
-                          graphNode={<BeautifulDiagram 
-                            graphDef={graphDefs[item.key]}/>}/>); 
-        } else {
-            return null; 
-        }
-    })}
-    </>
+        </Grid>
+    </Grid>
     )
 }

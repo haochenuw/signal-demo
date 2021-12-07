@@ -10,8 +10,11 @@ export const textDescriptions = {
     "ratchet": ["A ratchet consists of a rootkey and a ephemeral keypair", "The client generates each ephemeral keypair from random", "The initial rootkey comes from X3DH"],
     "x3dh": ["X3DH is a fancy name for doing Diffie-Hellman key exchange 3 times", 
             "A client performs X3DH to initialize a session", 
-            "It takes a prekey bundle downloaded from Signal server, and some local randomness", 
-            "Client uses the output of X3DH to derive the first rootkey, which is part of the first ratchet"], 
+            "X3DH takes a prekey bundle obtained from the Signal server, and a locally generated keypair called the BaseKey", 
+            "Client uses the output of X3DH to derive the first rootkey, which becomes a part of the first ratchet"], 
+    "baseKey": ["BaseKey is a keypair that a client generates when it initializes a session from a prekey bundle",
+                "The private base key is used for X3DH", 
+                "The public base key is then included in each encrypted message, until the client receives and decrypts a response from the other client"], 
     "prekeyBundle": [
         "When Alice wants to talk to Bob, it downloads a prekeyBundle of Bob from the server", 
         "The prekey Bundle contains (at least) Bob's identity key and a signed pre key", 

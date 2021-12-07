@@ -1,10 +1,18 @@
+// export interface SessionType<T = ArrayBuffer> {
+//     indexInfo: IndexInfo<T>
+//     registrationId: number
+//     currentRatchet: Ratchet<T>
+//     pendingPreKey?: PendingPreKey<T>
+
+//     oldRatchetList: OldRatchetInfo<T>[]
+
+//     chains: { [ephKeyString: string]: Chain<T> }
+// }
+
 import React from "react"
 import Chain from "./Chain"
 import Ratchet from "./Ratchet";
 
-import {
-    Paper, Typography,
-  } from "@material-ui/core";
 
 export default function Session(props){
     const chains = () => {
@@ -25,9 +33,8 @@ export default function Session(props){
 
     return (
         <div className="sessionType">
-            <Paper>
+            <h2>BaseKey</h2>
             <Ratchet clientName={props.name} ratchet = {props.session.currentRatchet} chains={props.session.chains}/>
-            </Paper>
         </div>
     )
 }

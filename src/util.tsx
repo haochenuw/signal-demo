@@ -36,6 +36,14 @@ export function abToS(b: ArrayBuffer): string {
     return base64.fromByteArray(new Uint8Array(b))
 }
 
+export function toAB(s: string): ArrayBuffer {
+    return uint8ArrayToArrayBuffer(base64.toByteArray(s))
+}
+
+export function uint8ArrayToArrayBuffer(arr: Uint8Array): ArrayBuffer {
+    return arr.buffer.slice(arr.byteOffset, arr.byteLength + arr.byteOffset)
+}
+
 export const readMessage = async (msg: ChatMessage, cipher: SessionCipher) => {
     let plaintext: ArrayBuffer = new Uint8Array().buffer;
     if (msg.message.type === 3) {

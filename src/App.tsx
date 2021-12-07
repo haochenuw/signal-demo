@@ -306,14 +306,9 @@ function App() {
 
     const pendingMessageBody = () => {
        return messages.map((m) => (
-            <React.Fragment>
+            <Grid container>
                 <Grid xs = {6} item key={m.id}>
                     <SignalMessage m={m}/>
-                    {/* <Paper className={
-                        m.message.type === 3 ? classes.preKeyMessage : classes.normalMessage
-                    }>
-                        <Typography onClick={()=>handlePendingMessageClick(m.message.type)} variant="body1">{m.from} - {m.to}; Id: {m.id}; Type:{m.message.type} </Typography>
-                    </Paper> */}
                 </Grid>
                 <Grid xs = {2} item>
                     <Button onClick={() => forwardMsg(m)}>Forward</Button>
@@ -321,7 +316,7 @@ function App() {
                 <Grid xs = {2} item>
                     <Button onClick={() => dropMsg(m)}>Drop</Button>
                 </Grid>
-            </React.Fragment>
+            </Grid>
        ))
     }; 
 
