@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import PubSub from 'pubsub-js'
 import ProgressBar from 'react-bootstrap/ProgressBar'
+import AppBar from '@mui/material/AppBar';
+
 import 'bootstrap/dist/css/bootstrap.min.css'; // Needed for progress bar to show up!
 import {
     KeyHelper,
@@ -16,10 +18,10 @@ import styled from 'styled-components'
 
 import "./App.css";
 import {
-    Paper,
     Grid,
     Typography,
-    Button,
+    Toolbar,
+    Box, 
 } from "@material-ui/core";
 
 import { SignalProtocolStore } from "./storage-type";
@@ -29,18 +31,14 @@ import {getSessionsFrom} from "./util";
 import ClientView from "./components/ClientView";
 import InfoPanel from "./components/InfoPanel.js";
 import ServerView from "./components/ServerView.js"
-import SignalMessage from "./components/SignalMessage.js"
 
 const initialStory =
     "# Click on a keyword to learn more";
 const createidMD = require("./createid.md");
-const startSessionWithBMD = require("./start-session-with-b.md");
 
 const StyledProgressBar = styled(ProgressBar)`
   color: palevioletred;
-  font-weight: bold;
-  height: 50px;
-  font-size: 40px;
+  height: 10px;
   width: 100%; 
 `;
 
@@ -49,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     paper: {
-        padding: theme.spacing(2),
+        padding: "8px",
         margin: "auto",
         maxWidth: "90%",
     },
@@ -57,8 +55,12 @@ const useStyles = makeStyles((theme) => ({
         width: 128,
         height: 128,
     },
+    box: {
+        padding: "10px", 
+        margin: "25px", 
+    }, 
     container: {
-        padding: theme.spacing(2),
+        padding: 0,
     },
     buttonitem: {
         margin: 10,
@@ -134,14 +136,8 @@ function App() {
 
     const [directory] = useState(new SignalDirectory());
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const [processedMessages, setProcessedMessages] = useState<
-        ProcessedChatMessage[]
-    >([]);
 
     const [aHasSession, setaHasSession] = useState(false);
-
-    const [adalheidTyping, setAdalheidTyping] = useState("");
-    const [brunhildeTyping, setBrunhildeTyping] = useState("");
 
     const [story, setStory] = useState(initialStory);
     
@@ -187,11 +183,12 @@ function App() {
             console.log('already has topic')
             return; 
         } else{
-            console.log('does not have topic')
+            console.log('discovering a new topic')
             console.log(discoveredTopics)
             setEntriesUnlocked((entriesUnlocked) => entriesUnlocked + 1); 
             setDiscoveredTopics([...discoveredTopics, topic]);
             // TODO set active panel
+            PubSub.publish('activeTopic', topic);
         }
     }
 
@@ -260,31 +257,6 @@ function App() {
         updateStory(createidMD);
     };
 
-    const startSessionWithBob = async () => {
-        // get Brünhild' key bundle
-        const brunhildeBundle = directory.getPreKeyBundle(bobName);
-        console.log({ brunhildeBundle });
-
-        const recipientAddress = brunhildeAddress;
-
-        // Instantiate a SessionBuilder for a remote recipientId + deviceId tuple.
-        const sessionBuilder = new SessionBuilder(adiStore, recipientAddress);
-
-        // Process a prekey fetched from the server. Returns a promise that resolves
-        // once a session is created and saved in the store, or rejects if the
-        // identityKey differs from a previously seen identity for this address.
-        console.log("Alice", "processing prekey bundle from server...");
-        await sessionBuilder.processPreKey(brunhildeBundle!);
-
-        // Now we can send an encrypted message
-        // const aliceSessionCipher = new SessionCipher(adiStore, recipientAddress);
-        setaHasSession(true)
-
-        await updateAllSessions();
-
-        updateStory(startSessionWithBMD);
-    };
-
     // Hao: helper function 
     const updateAllSessions = async () => {
         var updatedSessionCipher = getSessionCipherForRemoteAddress(bobName);
@@ -292,33 +264,6 @@ function App() {
         updatedSessionCipher = getSessionCipherForRemoteAddress(aliceName);
         newSessions = await getSessionsFrom(updatedSessionCipher);
     }
-
-    function showPendingMessages() {
-        return  (
-            <Grid container spacing={2}>            
-                <Grid xs={12} item>
-                <Typography variant="h2">Pending Messages</Typography>
-                </Grid>
-                {pendingMessageBody()}
-            </Grid>
-        )
-    };
-
-    const pendingMessageBody = () => {
-       return messages.map((m) => (
-            <Grid container>
-                <Grid xs = {6} item key={m.id}>
-                    <SignalMessage m={m}/>
-                </Grid>
-                <Grid xs = {2} item>
-                    <Button onClick={() => forwardMsg(m)}>Forward</Button>
-                </Grid>
-                <Grid xs = {2} item>
-                    <Button onClick={() => dropMsg(m)}>Drop</Button>
-                </Grid>
-            </Grid>
-       ))
-    }; 
 
     const forwardMsg = (message: any) => {
         console.log('forward clicked')
@@ -346,20 +291,26 @@ function App() {
         return new SessionCipher(store, address);
     };
 
+    const msgProps = {
+        messages: messages, 
+        forwardMsg: forwardMsg, 
+        dropMsg: dropMsg
+    }
+
     const total = 20; 
 
     return (
         <div className="App">
-            <Paper className={classes.paper}>
-                <Grid container className={classes.container}>
-                    <Grid item xs={12}>
-                        <Typography variant="h3" component="h3" gutterBottom>
-                            Live Demo of the Signal Protocol!
-                        </Typography>
-                        {showPendingMessages()}
-                        <Typography variant="h4">{`${entriesUnlocked} wiki entiries unlocked!`}</Typography>
+            <AppBar position="sticky">
+                <Toolbar>
+                    <Typography variant="h6" noWrap>Live Demo of the Signal Protocol</Typography>
+                    <div className="wiki_progress">
+                        <span>{`${entriesUnlocked} / ${total} wiki entiries unlocked!`}</span>
                         <StyledProgressBar striped={true} now={entriesUnlocked} max={total} min={0}/>
-                    </Grid>
+                    </div>
+                </Toolbar>
+            </AppBar>
+                <Grid container className={classes.container}>
                     <Grid item xs={4}>
                         <ClientView
                             clientName={aliceName}
@@ -371,7 +322,10 @@ function App() {
                         />
                     </Grid>
                     <Grid item xs={4}>
-                        <ServerView alicePreKeyBundle={alicePreKeyBundle} bobPreKeyBundle={bobPreKeyBundle}/>
+                        <ServerView 
+                        alicePreKeyBundle={alicePreKeyBundle} 
+                        bobPreKeyBundle={bobPreKeyBundle}
+                        msgProps={msgProps}/>
                     </Grid>
                     <Grid item xs={4}>
                         <ClientView
@@ -383,10 +337,10 @@ function App() {
                             sendMessageFunc={sendMessage}
                         />
                     </Grid>
-
                 </Grid>
+            <Box className={classes.box}>
             <InfoPanel selectedInfo="registration" discoveredTopics = {discoveredTopics}/>
-            </Paper>
+            </Box>
         </div>
     );
 }

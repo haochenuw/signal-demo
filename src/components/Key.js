@@ -37,7 +37,7 @@ export default function Key(props) {
 }
 
 function colorFromU8Array(u8Array) {
-    if (u8Array.length != 3) {
+    if (u8Array.length !== 3) {
         console.log("error: incorrect input length!");
         console.log({string: uint8ArrayToString(u8Array)});
         return "#FFFFFF";

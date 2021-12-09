@@ -9,10 +9,18 @@ import {
     Grid,
 } from "@material-ui/core";
 import BeautifulDiagram from "./BeautifulDiagram";
+import { makeStyles } from "@material-ui/core/styles";
+import {Box} from "@material-ui/core"; 
 
 const StyledTab = styled(Tab)({
     borderBottom: '1px solid #e8e8e8',
     backgroundColor: '#1890ff',
+});
+
+const useStyles = makeStyles({
+    box: {
+        "margin-left": '25px', 
+    },
 });
 
 
@@ -24,10 +32,6 @@ const topicsMetadata = [
     {
         key: "preKeyBundle", 
         title: "PreKey Bundle", 
-    }, 
-    {
-        key: "identityKey", 
-        title: "identityKey", 
     }, 
     {
         key: "x3dh", 
@@ -87,24 +91,28 @@ export default function InfoPanel(props) {
         setSelectedTab(newValue);
     };
 
+    const classes = useStyles(); 
+
     return (
-    <Grid container direction="row" spacing={10}> 
+    <Grid container justifyContent="center" direction="row" spacing={10}> 
         <Grid item xs={2}>
-        <Tabs 
-            value={selectedTab} 
-            onChange={handleChange} 
-            aria-label="basic tabs example"
-            orientation="vertical"
-            indicatorColor="primary"
-        >
-            {topicsMetadata.map((item, index) => {
-                if (props.discoveredTopics.includes(item.key)){
-                    return (<StyledTab key={index} label={item.title}/>); 
-                } else {
-                    return <StyledTab  key={index} label="Locked"/>; 
-                }
-            })}
-        </Tabs>   
+            <Box className={classes.box}>
+            <Tabs 
+                value={selectedTab} 
+                onChange={handleChange} 
+                aria-label="basic tabs example"
+                orientation="vertical"
+                indicatorColor="primary"
+            >
+                {topicsMetadata.map((item, index) => {
+                    if (props.discoveredTopics.includes(item.key)){
+                        return (<StyledTab key={index} label={item.title}/>); 
+                    } else {
+                        return <StyledTab  key={index} label="Locked"/>; 
+                    }
+                })}
+            </Tabs>   
+            </Box>
         </Grid>
         <Grid item xs={10}>     
         {topicsMetadata.map((item, index) => {

@@ -6,29 +6,17 @@
 //     added?: number //timestamp
 // }
 import PubSub from 'pubsub-js'
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Key from "./Key.js"
 import {abToS, toAB} from "../util.tsx"
 import FancyChain from "./FancyChain.js"
+import {SubTitle} from './Styled.js'
+
 export default function Ratchet(props){
     const [currentShowingChain, setCurrentShowingChain] = useState(null);
     const [currentShowingEphemeralKey, setCurrentShowingEphemeralKey] = useState("");
     const [isChainShowing, setIsChainShowing] = useState(false);
     const [selectedRootKey, setSelectedRootKey] = useState(null); 
-    console.log('ratchet renders with ', props.ratchet); 
-
-    var rootKeyFlowElements = props.ratchet.rootKeyHistory.map((item, index) => {
-        return {
-                    id: "root" + props.clientName + abToS(item), 
-                    data: {label: <Key key={item} desc={index} keyArray={item}></Key>, rootkey: item}, 
-                    position: {x: 0, y: 100 + index*40}, 
-                    style: {
-                        width: 200,
-                        height: 60
-                    }
-                }
-        }
-    ); 
 
     function onRootKeyClick(rootKey) {
         const rootKeyString = abToS(rootKey); 
@@ -69,7 +57,7 @@ export default function Ratchet(props){
             return null; 
         }
         return (<div> 
-            <h2>Ephemeral Key</h2>
+            <SubTitle>Ephemeral Key</SubTitle>
             <Key desc={"Public ephemeral key"} keyArray={toAB(currentShowingEphemeralKey)}/>
             </div>
         )
@@ -77,7 +65,7 @@ export default function Ratchet(props){
 
     return (
         <>
-            <h2>Ratchets</h2>
+            <SubTitle>Ratchets</SubTitle>
             {props.ratchet.rootKeyHistory.map((item, index) => { return (
                 <Key selected={selectedRootKey === item} key={index} desc={"RootKey"} keyArray={item} onClick={() => onRootKeyClick(item)}></Key>
                 )

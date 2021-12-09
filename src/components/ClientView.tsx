@@ -8,7 +8,6 @@ import {
     Grid,
     Typography,
     Button,
-    Chip,
     TextField,
     Tabs, 
     Tab
@@ -18,7 +17,7 @@ import {
     KeyPairType,
 } from "@privacyresearch/libsignal-protocol-typescript";
 import { makeStyles } from "@material-ui/core/styles";
-
+import {Title, SubTitle} from './Styled.js'
 import { SignalDirectory, FullDirectoryEntry} from "../signal-directory";
 import {
     KeyHelper,
@@ -306,15 +305,9 @@ export default function ClientView(props: Props) {
         
         return hasIdentity ? (
             <React.Fragment>
-                <h2 onClick={() => handleIdentityKeyClick()}>Identity Key</h2>
+                <SubTitle onClick={() => handleIdentityKeyClick()}>Identity Keys</SubTitle>
                 <Key desc={"identity private key "} keyArray = {identityKeypair?.privKey}/>
                 <Key desc={"identity public key "} keyArray = {identityKeypair?.pubKey}/>
-                <Chip
-                    label={`${props.clientName}'s Registration ID: ${localStore.get(
-                        "registrationID",
-                        ""
-                    )}`}
-                ></Chip>
                 {hasSession || !(hasIdentity && otherHasIdentity) ? (
                     <div></div>
                 ) : (
@@ -333,7 +326,7 @@ export default function ClientView(props: Props) {
                 variant="contained"
                 onClick={createIdentity}
             >
-                Create an identity for {props.clientName}
+                Register for {props.clientName}
             </Button>
         )
     }
@@ -355,6 +348,7 @@ export default function ClientView(props: Props) {
 
     return (
         <Paper className={classes.paper}>
+            <Title>{props.clientName} View</Title>
             <Grid container>
                 <Tabs value={selectedTab} onChange={handleChange} aria-label="basic tabs example">
                     <Tab label="Basic Info"/>
@@ -366,7 +360,6 @@ export default function ClientView(props: Props) {
                     {selectedTab === 1 && messagePanel()}
                     {selectedTab === 2 && sessionsPanel()}
                 </Grid>
-
             </Grid>
         </Paper>
     )

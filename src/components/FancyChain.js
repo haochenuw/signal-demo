@@ -11,6 +11,8 @@ import Button from '@material-ui/core/Button'
 import {
     Grid,
 } from "@material-ui/core";
+import { H3Title } from './Styled.js';
+
 export default function FancyChain(props) {
     const [showMessageKeys, setShowMessageKeys] = useState(false)
     const handleOnClick = () => {
@@ -33,7 +35,7 @@ export default function FancyChain(props) {
 
     return(
         <>
-            <h2 onClick={()=> handleChainTitleClick()}>{chainTypeStr} Chain</h2>
+            <H3Title onClick={()=> handleChainTitleClick()}>{chainTypeStr} Chain</H3Title>
             <Button color='primary' onClick={() => {
                 handleOnClick(); 
                 console.log("clicked toggle message key, length = " + Object.keys(props.chain.messageKeys).length)

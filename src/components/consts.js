@@ -1,6 +1,6 @@
 export const textDescriptions = {
     "registration": ["To register, a client generates many public/private keypairs", "These keypairs are given names: one identity key, some signed prekeys, and many onetime prekeys", 
-    "The client sends the public keys to the Signal server, who stores them alongside the client's id (e.g. phone no.)"], 
+    "The client sends the public keys to the Signal server, who stores them alongside the client's ID"], 
     "chainKey": ["Each chain has a growing list of chain keys", 
                 "Every new chain key is created from the previous one using a Key Derivation Function (KDF)", 
                 "Each KDF creates a new a message key as well"], 

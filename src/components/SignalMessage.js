@@ -14,10 +14,12 @@
 
 import React, {useState} from "react"
 import Key from "./Key.js"
-import { Typography, Button } from "@material-ui/core"
+import { Button } from "@material-ui/core"
 import PubSub from 'pubsub-js'
 import {Collapse} from 'react-collapse';
-import styled from 'styled-components'
+// import styled from 'styled-components'
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { withStyles } from "@material-ui/core/styles";
 
 import {
     PreKeyWhisperMessage, 
@@ -59,18 +61,21 @@ function binaryStringToArrayBuffer(str) {
     return Uint8Array.from(bb).buffer
 }
 
-const StyledButton = styled(Button)`
-  color: white;
-  font-weight: bold;
-  font-size: 20px;
-  width: 100px; 
-  background-color: black; 
-  margin: 5px; 
-  '&:hover': {
-    backgroundColor: '#0F2C67',
-    color: 'white',
-  },
-`;
+const StyledButton = withStyles({
+  root: {
+    color: "white",
+    fontSize: "18px", 
+    background: "#4CA873",
+    margin: "5px",
+    padding: "10px", 
+    height: "40px", 
+    "&:hover": {
+        background: "#2D6445",
+    }, 
+    autocapitalize: "none"
+ }
+})(Button); 
+
 
 export default function SignalMessage(props){
     const [isContentOpen, setIsContentOpen] = useState(false); 
@@ -103,14 +108,17 @@ export default function SignalMessage(props){
             return (<Key desc="Remote ephemeral Key" keyArray={msg.ephemeralKey}></Key>)
         }
     }
+    var title = `Msg_{${props.m.id}}`;
+    const fromTo =  `${props.m.from} - ${props.m.to}`; 
+    var type = messageType === 3 ? "Prekey" : "Normal"; 
     return (
         <div>
-            <Typography 
-                onClick={()=>handlePendingMessageClick(messageType)} 
-                variant="body">
-                MESSAGE {props.m.id}: {props.m.from} TO {props.m.to} Type:{messageType} 
-            </Typography>
-            <StyledButton onClick={() => setIsContentOpen(!isContentOpen)}>Show</StyledButton>
+            <StyledButton 
+                onClick={() => {handlePendingMessageClick(messageType); setIsContentOpen(!isContentOpen);}}
+                endIcon={<ExpandMoreIcon />}
+            >
+                {type} {title}
+                </StyledButton>
             <Collapse isOpened={isContentOpen}>
             {content()}
             </Collapse>
