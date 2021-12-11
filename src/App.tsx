@@ -15,6 +15,7 @@ import {
     MessageType,
 } from "@privacyresearch/libsignal-protocol-typescript";
 import styled from 'styled-components'
+import { ToastProvider, useToasts } from 'react-toast-notifications';
 
 import "./App.css";
 import {
@@ -26,8 +27,7 @@ import {
 
 import { SignalProtocolStore } from "./storage-type";
 import { SignalDirectory, FullDirectoryEntry } from "./signal-directory";
-
-import {getSessionsFrom} from "./util";
+import {textDescriptions} from "./components/consts.js"
 import ClientView from "./components/ClientView";
 import InfoPanel from "./components/InfoPanel.js";
 import ServerView from "./components/ServerView.js"
@@ -128,6 +128,8 @@ const aliceAddress = new SignalProtocolAddress(aliceName, 1);
 const brunhildeAddress = new SignalProtocolAddress(bobName, 1);
 
 function App() {
+    const { addToast } = useToasts()
+
     const [adiStore] = useState(new SignalProtocolStore());
     const [brunhildeStore] = useState(new SignalProtocolStore());
 
@@ -137,23 +139,14 @@ function App() {
     const [directory] = useState(new SignalDirectory());
     const [messages, setMessages] = useState<ChatMessage[]>([]);
 
-    const [aHasSession, setaHasSession] = useState(false);
-
     const [story, setStory] = useState(initialStory);
     
-    const [aliceIdKeypair, setAliceIdKeypair] = useState(["", ""]);
     const [discoveredTopics, setDiscoveredTopics] = useState<string[]>([]); 
     const [entriesUnlocked, setEntriesUnlocked] = useState(0); 
     const [alicePreKeyBundle, setAlicePreKeyBundle] = useState<FullDirectoryEntry | null>(null); 
     const [bobPreKeyBundle, setBobPreKeyBundle] = useState<FullDirectoryEntry | null>(null); 
     
     const classes = useStyles();
-
-    const updateStory = async (url: string) => {
-        const resp = await fetch(url);
-        const md = await resp.text();
-        setStory(md);
-    };
 
     const sendMessage = (to: string, from: string, message: MessageType) => {
         const msg = { to, from, message, delivered: false, id: getNewMessageID() };
@@ -183,6 +176,11 @@ function App() {
             console.log('already has topic')
             return; 
         } else{
+            addToast(`You Unlocked a new Wiki page: ${topic}`, {
+                appearance: 'success',
+                autoDismiss: true,
+                autoDismissTimeout: 5000
+            }); 
             console.log('discovering a new topic')
             console.log(discoveredTopics)
             setEntriesUnlocked((entriesUnlocked) => entriesUnlocked + 1); 
@@ -197,6 +195,10 @@ function App() {
         var subscription = PubSub.subscribe('discoverTopic', topicDiscoverHandler);
     }, [discoveredTopics]);
 
+    useEffect(() => {
+        addToast('Demo Toast', { appearance: 'success' });
+    }, []);
+
 
     const storeSomewhereSafe = (store: SignalProtocolStore) => (
         key: string,
@@ -205,70 +207,12 @@ function App() {
         store.put(key, value);
     };
 
-    const createID = async (name: string, store: SignalProtocolStore) => {
-        const registrationId = KeyHelper.generateRegistrationId();
-        // Store registrationId somewhere durable and safe... Or do this.
-        storeSomewhereSafe(store)(`registrationID`, registrationId);
-
-        const identityKeyPair = await KeyHelper.generateIdentityKeyPair();
-        // Store identityKeyPair somewhere durable and safe... Or do this.
-        storeSomewhereSafe(store)("identityKey", identityKeyPair);
-
-        // const base64String = btoa(String.fromCharCode.apply(null, new Uint8Array(identityKeyPair.privKey)))); 
-
-        var priv = Buffer.from(new Uint8Array(identityKeyPair.privKey)).toString('base64');
-        var pub = Buffer.from(new Uint8Array(identityKeyPair.pubKey)).toString('base64');
-
-        if (name === "Alice") {
-            setAliceIdKeypair([priv, pub]);
-        }
-        console.log("Hao", `identity key ceated for ${name}`);
-
-
-        const preKeyId = Math.floor(10000 * Math.random());
-        const preKey = await KeyHelper.generatePreKey(preKeyId);
-        store.storePreKey(`${preKeyId}`, preKey.keyPair);
-
-        const signedPreKeyId = Math.floor(10000 * Math.random());
-        const signedPreKey = await KeyHelper.generateSignedPreKey(
-            identityKeyPair,
-            signedPreKeyId
-        );
-        store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair);
-        const publicSignedPreKey: SignedPublicPreKeyType = {
-            keyId: signedPreKeyId,
-            publicKey: signedPreKey.keyPair.pubKey,
-            signature: signedPreKey.signature,
-        };
-
-        // Now we register this with the server so all users can see them
-        const publicPreKey: PreKeyType = {
-            keyId: preKey.keyId,
-            publicKey: preKey.keyPair.pubKey,
-        };
-        directory.storeKeyBundle(name, {
-            registrationId,
-            identityPubKey: identityKeyPair.pubKey,
-            signedPreKey: publicSignedPreKey,
-            oneTimePreKeys: [publicPreKey],
-        });
-        console.log("Hao", `bundle registered at server`);
-
-        updateStory(createidMD);
-    };
-
-    // Hao: helper function 
-    const updateAllSessions = async () => {
-        var updatedSessionCipher = getSessionCipherForRemoteAddress(bobName);
-        var newSessions = await getSessionsFrom(updatedSessionCipher);
-        updatedSessionCipher = getSessionCipherForRemoteAddress(aliceName);
-        newSessions = await getSessionsFrom(updatedSessionCipher);
-    }
-
     const forwardMsg = (message: any) => {
         console.log('forward clicked')
         // publish message to child component
         PubSub.publish('message', message);
+        // publish decryption wiki
+        PubSub.publish('discoverTopic', 'decryption');
 
         // remove message 
         const index = messages.indexOf(message);
@@ -284,21 +228,15 @@ function App() {
         setMessages([...messages]);
     }
 
-    const getSessionCipherForRemoteAddress = (to: string) => {
-        // send from Brünhild to adalheid so use his store
-        const store = to === aliceName ? brunhildeStore : adiStore;
-        const address = to === aliceName ? aliceAddress : brunhildeAddress;
-        return new SessionCipher(store, address);
-    };
-
     const msgProps = {
         messages: messages, 
         forwardMsg: forwardMsg, 
         dropMsg: dropMsg
     }
 
-    const total = 20; 
+    const total = Object.keys(textDescriptions).length; 
 
+    
     return (
         <div className="App">
             <AppBar position="sticky">
@@ -345,4 +283,10 @@ function App() {
     );
 }
 
-export default App;
+const AppWithToast = () => (
+    <ToastProvider>
+      <App />
+    </ToastProvider>
+  );
+
+export default AppWithToast;

@@ -32,7 +32,7 @@ export default function Info(props){
     const { graphNode, descriptions, title, ...other } = props;
     return(
         <section>
-        <div className={classes.root} height="100%" flex="1">
+        <div className={`${classes.root} ${props.className}`} height="100%" flex="1">
         <Typography variant="h2" align="left">{title}</Typography>
         {props.descriptions.map((item) => (
             <MyDiv>{item}</MyDiv>

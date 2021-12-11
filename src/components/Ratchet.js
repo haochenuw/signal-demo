@@ -10,7 +10,7 @@ import React, { useState } from "react";
 import Key from "./Key.js"
 import {abToS, toAB} from "../util.tsx"
 import FancyChain from "./FancyChain.js"
-import {SubTitle} from './Styled.js'
+import {H3Title, SubTitle} from './Styled.js'
 
 export default function Ratchet(props){
     const [currentShowingChain, setCurrentShowingChain] = useState(null);
@@ -57,8 +57,8 @@ export default function Ratchet(props){
             return null; 
         }
         return (<div> 
-            <SubTitle>Ephemeral Key</SubTitle>
-            <Key desc={"Public ephemeral key"} keyArray={toAB(currentShowingEphemeralKey)}/>
+            <H3Title>Ephemeral Key</H3Title>
+            <Key desc={"Ephemeral public key"} keyArray={toAB(currentShowingEphemeralKey)}/>
             </div>
         )
     }

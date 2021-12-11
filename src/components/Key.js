@@ -26,7 +26,7 @@ export default function Key(props) {
         }
         return (
             <div className={classes} style={keyStyle} onClick={props.onClick}>
-                {props.desc}: {keyBase64Str.slice(-10)} 
+                {props.desc}: {"..." + keyBase64Str.slice(-10)} 
             </div>
         )
     } else {

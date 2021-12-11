@@ -14,12 +14,10 @@
 
 import React, {useState} from "react"
 import Key from "./Key.js"
-import { Button } from "@material-ui/core"
+import { StyledButton } from "./Styled"
 import PubSub from 'pubsub-js'
 import {Collapse} from 'react-collapse';
-// import styled from 'styled-components'
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { withStyles } from "@material-ui/core/styles";
 
 import {
     PreKeyWhisperMessage, 
@@ -61,22 +59,6 @@ function binaryStringToArrayBuffer(str) {
     return Uint8Array.from(bb).buffer
 }
 
-const StyledButton = withStyles({
-  root: {
-    color: "white",
-    fontSize: "18px", 
-    background: "#4CA873",
-    margin: "5px",
-    padding: "10px", 
-    height: "40px", 
-    "&:hover": {
-        background: "#2D6445",
-    }, 
-    autocapitalize: "none"
- }
-})(Button); 
-
-
 export default function SignalMessage(props){
     const [isContentOpen, setIsContentOpen] = useState(false); 
 
@@ -105,10 +87,10 @@ export default function SignalMessage(props){
         }
         else {
             const msg = decodeNormalMessageUtil(buffer); 
-            return (<Key desc="Remote ephemeral Key" keyArray={msg.ephemeralKey}></Key>)
+            return (<Key desc="Ephemeral public Key" keyArray={msg.ephemeralKey}></Key>)
         }
     }
-    var title = `Msg_{${props.m.id}}`;
+    var title = `Msg_${props.m.id}`;
     const fromTo =  `${props.m.from} - ${props.m.to}`; 
     var type = messageType === 3 ? "Prekey" : "Normal"; 
     return (

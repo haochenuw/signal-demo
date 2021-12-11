@@ -16,10 +16,8 @@ import Key from "./Key.js"
 import React from "react"
 import PubSub from 'pubsub-js'
 import {Title, SubTitle} from './Styled.js'
-import styled from 'styled-components'
 import { makeStyles } from "@material-ui/core/styles";
-
-
+import { withStyles } from "@material-ui/core/styles";
 
 import {
     Paper,
@@ -28,14 +26,22 @@ import {
 } from "@material-ui/core";
 import SignalMessage from "./SignalMessage.js"
 
-const ForwardDropButton = styled(Button)`
-  background-color: blue; 
-  border-radius: 5px; 
-  margin: 5px; 
-  padding: 10px; 
-  height: 40px; 
-  font-size: 18px;
-`;
+const ForwardDropButton = withStyles({
+    root: {
+      color: "white",
+      fontSize: "18px", 
+      background: "#2266EE",
+      margin: "5px",
+      padding: "10px", 
+      height: "40px", 
+      "&:hover": {
+          background: "#1747A6",
+      }, 
+   }, 
+   label: {
+    textTransform: "capitalize"
+    }
+  })(Button); 
 
 const useStyles = makeStyles((theme) => ({
     paper: {
