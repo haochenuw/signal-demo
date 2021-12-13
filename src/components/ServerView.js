@@ -105,8 +105,8 @@ function PendingMessages(props) {
 function PreKeyBundle(props) {
     return (
         <>
-        <SubTitle>{props.client}'s Prekey Bundle</SubTitle>
-        <Key onClick={() => PubSub.publish('discoverTopic', 'preKeyBundle')} desc={"identity public key"} keyArray = {props.data.identityPubKey}/>
+        <SubTitle onClick={() => PubSub.publish('discoverTopic', 'preKeyBundle')}>{props.client}'s Prekey Bundle</SubTitle>
+        <Key onClick={() => PubSub.publish('discoverTopic', 'identityKey')} desc={"identity public key"} keyArray = {props.data.identityPubKey}/>
         <Key desc={"signed prekey"} keyArray = {props.data.signedPreKey.publicKey}/>
         </>
     )

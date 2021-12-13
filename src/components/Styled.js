@@ -1,6 +1,6 @@
 
 import { withStyles } from "@material-ui/core/styles";
-import {Button} from "@material-ui/core"; 
+import {Button, Typography} from "@material-ui/core"; 
 import styled from 'styled-components'
 
 export const Title = styled.h1`
@@ -13,7 +13,16 @@ export const SubTitle = styled.h2`
 font-size: 2em;
 text-align: left;
 color: #bcbcbc;
+&:hover {
+    cursor: pointer; 
+}
 `;
+
+// export const SubTitle = withStyles({
+//     fontSize: "20px",
+//     textAlign: "left",
+//     color: "#bcbcbc",
+// })(Typography); 
 
 export const H3Title = styled.h3`
 font-size: 1.5em;

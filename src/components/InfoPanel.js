@@ -55,6 +55,10 @@ const topicsMetadata = [
         title: "Session",  
     },
     {
+        key: "baseKey", 
+        title: "BaseKey",  
+    },
+    {
         key: "rootKey", 
         title: "Root Key",  
     },

@@ -15,3 +15,16 @@
     0% {opacity:0;}
     100% {opacity:1;}
 }
+
+.youtube.social {
+    margin: 10px; 
+}
+
+.twitter.social {
+    margin: 10px; 
+}
+
+.github.social {
+    margin: 10px; 
+    color: black;
+}

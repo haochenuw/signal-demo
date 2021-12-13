@@ -13,7 +13,7 @@ export default function Key(props) {
     const classes = `key ${selected}`
     const display = props.display ?? "block"; 
 
-    if (props.keyArray) {
+    if (props.keyArray !== null) {
         let keyBase64Str = tob64Str(props.keyArray)
         let u8rep = new Uint8Array(props.keyArray)
         let colorHex = colorFromU8Array(u8rep.slice(-3))
@@ -31,7 +31,7 @@ export default function Key(props) {
         )
     } else {
         return (
-            <div>NOTHING</div>
+            <div>None</div>
         )
     }
 }
