@@ -33,7 +33,6 @@ import { StyledAppBarButton } from "./components/Styled";
 import WikiPage from "./components/WikiPage";
 
 const StyledProgressBar = styled(ProgressBar)`
-  color: palevioletred;
   height: 10px;
   width: 100%; 
 `;
@@ -241,7 +240,7 @@ function App() {
                     ))}
                     <div className="wiki_progress">
                         <span>{`${entriesUnlocked} / ${total} wiki entiries unlocked!`}</span>
-                        <StyledProgressBar striped={true} now={entriesUnlocked} max={total} min={0} />
+                        <StyledProgressBar variant="success" animated={true} striped={true} now={entriesUnlocked} max={total} min={0} />
                     </div>
                 </Toolbar>
             </AppBar>

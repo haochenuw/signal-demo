@@ -1,6 +1,10 @@
 .selected {
-    border-color: gold; 
     border-style: solid; 
+    border-width: 5px;
+    animation-duration: 1s;
+    animation-name: fancyborder;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
 }
 
 .key {
@@ -27,4 +31,14 @@
 .github.social {
     margin: 10px; 
     color: black;
+}
+
+@keyframes fancyborder {
+    from {
+        border-color: gold;
+    }
+
+    to {
+        border-color: palegoldenrod;
+    }
 }
