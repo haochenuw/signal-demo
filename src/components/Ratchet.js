@@ -13,48 +13,52 @@ import {H3Title, SubTitle} from './Styled.js'
 import PubSub from 'pubsub-js'
 
 export default function Ratchet(props){
-    const [currentShowingChain, setCurrentShowingChain] = useState(null);
-    const [isChainShowing, setIsChainShowing] = useState(false);
+    const [hasChain, setHasChain] = useState(false);
     const [selectedRootKey, setSelectedRootKey] = useState(null); 
 
-    function onRootKeyClick(rootKey) {
-        setSelectedRootKey(rootKey); 
-        const ephemeralKey = props.ratchet.rootKeyToEphemeralKeyMapping[abToS(rootKey)]; 
-        var chain = undefined; 
+    const findChain = (ephemeralKey) => {
+        var chain = undefined
         if (ephemeralKey !== undefined){
-            chain = props.chains[abToS(ephemeralKey.local?.pubKey)]; 
-            if (chain === undefined){
-                // try another 
+            if (ephemeralKey.sending === true){
+                chain = props.chains[abToS(ephemeralKey.local?.pubKey)]; 
+            } else {
                 chain = props.chains[abToS(ephemeralKey.remote)]; 
             }
         } 
+        return chain 
+    }
+
+    function onRootKeyClick(rootKey, index) {
+        console.log('Rootkey clicked', index)
+        setSelectedRootKey(index); 
+        const ephemeralKey = props.ratchet.rootKeyToEphemeralKeyMapping[abToS(props.ratchet.rootKeyHistory[selectedRootKey])];
+        const chain = findChain(ephemeralKey)
         if (chain !== undefined){
-            console.log('successly found chain!')
-            setCurrentShowingChain(chain); 
-            setIsChainShowing(true); 
+            console.log("chain is found!")
+            setHasChain(true); 
         } else {
             console.log('no chain!')
-            setCurrentShowingChain(null); 
+            setHasChain(false)
         }
         PubSub.publish('discoverTopic', 'rootKey');
     }
 
     const chainInfoPanel = () => {
-        if (isChainShowing && currentShowingChain !== null) {
+        const ephemeralKey = props.ratchet.rootKeyToEphemeralKeyMapping[abToS(props.ratchet.rootKeyHistory[selectedRootKey])];
+        const chain = findChain(ephemeralKey)
+        if (chain !== undefined) {
             return (
-                <FancyChain chain={currentShowingChain}/>
+                <FancyChain chain={chain}/>
             )
         }
-        else if (isChainShowing){
-            return (<div>No chain associated with this root key!</div>)
+        else {
+            return (<div>No chain associated with this Ratchet!</div>)
         }
-        return (<div>Click on a root key to show its chain</div>)
     }
 
     const ephemeralKeyPanel = () => {
-        const ephemeralKey = props.ratchet.rootKeyToEphemeralKeyMapping[abToS(selectedRootKey)];
-        console.log("mapping = ", JSON.stringify(props.ratchet.rootKeyToEphemeralKeyMapping))
-        console.log("ephemeralKey = ", JSON.stringify(ephemeralKey))
+        const ephemeralKey = props.ratchet.rootKeyToEphemeralKeyMapping[abToS(props.ratchet.rootKeyHistory[selectedRootKey])];
+        console.log("mapping = ", props.ratchet.rootKeyToEphemeralKeyMapping)
         let remoteEphemeralKey = null; 
         let localEphemeralKeypair = null; 
         if (ephemeralKey !== undefined){
@@ -75,7 +79,7 @@ export default function Ratchet(props){
         <>
             <SubTitle onClick={()=>{PubSub.publish("discoverTopic", "ratchet")}}>Ratchets</SubTitle>
             {props.ratchet.rootKeyHistory.map((item, index) => { return (
-                <Key selected={selectedRootKey === item} key={index} desc={"RootKey"} keyArray={item} onClick={() => onRootKeyClick(item)}></Key>
+                <Key selected={selectedRootKey === index} key={index} desc={"RootKey"} keyArray={item} onClick={() => onRootKeyClick(item, index)}></Key>
                 )
             })}
             {selectedRootKey !== null && ephemeralKeyPanel()}

@@ -22,21 +22,15 @@ import {
     Grid,
     Typography,
     Toolbar,
-    Box,
-    Button,
 } from "@material-ui/core";
 
-import { SignalProtocolStore } from "./storage-type";
 import { SignalDirectory, FullDirectoryEntry } from "./signal-directory";
 import { textDescriptions } from "./components/consts.js"
 import ClientView from "./components/ClientView";
-import InfoPanel from "./components/InfoPanel.js";
 import ServerView from "./components/ServerView.js"
-import { Contactless } from "@material-ui/icons";
-import Social from "./components/Social";
-
-const initialStory =
-    "# Click on a keyword to learn more";
+import Social, { SocialSubTitle } from "./components/Social";
+import { StyledAppBarButton } from "./components/Styled";
+import WikiPage from "./components/WikiPage";
 
 const StyledProgressBar = styled(ProgressBar)`
   color: palevioletred;
@@ -44,7 +38,7 @@ const StyledProgressBar = styled(ProgressBar)`
   width: 100%; 
 `;
 
-const pages = ["Home", "About"];
+const pages = ["Home", "Wiki", "About"];
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -65,6 +59,9 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         padding: 0,
+    },
+    hiddencontainer: {
+        display: "none"
     },
     buttonitem: {
         margin: 10,
@@ -229,54 +226,18 @@ function App() {
         setCurrentPage(page)
     }
 
-    const homePage = () => {
-        return (<>
-            <Grid container className={classes.container}>
-                <Grid item xs={4}>
-                    <ClientView
-                        clientName={aliceName}
-                        otherClientName={bobName}
-                        getPreKeyBundleFunc={getPreKeyBundleFunc}
-                        otherHasIdentity={bHasIdentity}
-                        registerFunc={registerFunc}
-                        sendMessageFunc={sendMessage}
-                    />
-                </Grid>
-                <Grid item xs={4}>
-                    <ServerView
-                        alicePreKeyBundle={alicePreKeyBundle}
-                        bobPreKeyBundle={bobPreKeyBundle}
-                        msgProps={msgProps} />
-                </Grid>
-                <Grid item xs={4}>
-                    <ClientView
-                        clientName={bobName}
-                        otherClientName={aliceName}
-                        getPreKeyBundleFunc={getPreKeyBundleFunc}
-                        otherHasIdentity={aHasIdentity}
-                        registerFunc={registerFunc}
-                        sendMessageFunc={sendMessage}
-                    />
-                </Grid>
-            </Grid>
-            <Box className={classes.box}>
-                <InfoPanel selectedInfo="registration" discoveredTopics={discoveredTopics} />
-            </Box>
-        </>)
-    }
-
     return (
         <div className="App">
             <AppBar position="sticky">
                 <Toolbar>
                     <Typography variant="h6" noWrap>Live Demo of the Signal Protocol</Typography>
                     {pages.map((page) => (
-                        <Button
+                        <StyledAppBarButton
                             key={page}
                             onClick={() => handlePageClick(page)}
                         >
                             {page}
-                        </Button>
+                        </StyledAppBarButton>
                     ))}
                     <div className="wiki_progress">
                         <span>{`${entriesUnlocked} / ${total} wiki entiries unlocked!`}</span>
@@ -284,8 +245,23 @@ function App() {
                     </div>
                 </Toolbar>
             </AppBar>
-            {currentPage === "Home" && homePage()}
-            {currentPage === "About" && <AboutPage/>}
+            <HomePage
+              aliceName={aliceName}
+              bobName={bobName}
+              aHasIdentity={aHasIdentity}
+              bHasIdentity={bHasIdentity}
+              alicePreKeyBundle={alicePreKeyBundle}
+              bobPreKeyBundle={bobPreKeyBundle}
+              msgProps={msgProps}
+              registerFunc={registerFunc}
+              sendMessage={sendMessage}
+              getPreKeyBundleFunc={getPreKeyBundleFunc}
+              visible = {currentPage === "Home"}
+              key="home"
+            />
+            
+            {currentPage === "Wiki" && <WikiPage discoveredTopics={discoveredTopics} />}
+            {currentPage === "About" && <AboutPage />}
 
         </div>
     );
@@ -301,52 +277,96 @@ const AppWithToast = () => (
 
 export default AppWithToast;
 
-
-const SubTitle = styled.h2`
-font-size: 60px;
-text-align: left;
-color: "black";
-margin: 20px; 
-`;
-
 const Paragraph = styled.p`
-font-size: 25px;
+font-size: 22px;
 text-align: left;
 color: "black";
 margin: 20px; 
 width: 80%; 
 `;
 
+const Img = styled.img`
+ height: 60px !important;
+ width: 217px !important;
+`;
+
 function AboutPage(props: any) {
-    const info = () =>
-    {
+    const info = () => {
         return (
             <>
-            <SubTitle>Info</SubTitle>
-            <Paragraph>This interactive demo is made by Hao Chen and is available on <a href="/">github</a>. 
-                    It is based on the open source implementation of libsignal in <a href="/">typsecript</a>, and 
-                has grown out of the the accompanying <a href="/">demo</a>. </Paragraph>
+                <SocialSubTitle>Info</SocialSubTitle>
+                <Paragraph>This interactive demo is made by Hao Chen
+                    and is available on <a href="https://github.com/haochenuw/signal-demo" target="_blank">github</a>.
+                    It is based on the open source implementation of
+                    libsignal in <a href="https://github.com/privacyresearchgroup/libsignal-protocol-typescript" target="_blank">typsecript</a> by Privacy Research, and
+                    has grown out of the the accompanying <a href="https://github.com/privacyresearchgroup/libsignal-typescript-demo" target="_blank">demo</a>. </Paragraph>
             </>
-         )
+        )
     }
 
-    const howToUse = () =>
-    {
+    const howToUse = () => {
         return (
             <>
-            <SubTitle>How to use</SubTitle>
-            <Paragraph>Click the buttons to perform operations as signal clients and server, such as registering, initiating sessions and sending messages</Paragraph>
-            <Paragraph>The demo also shows the internals of the Signal protocol, including a detailed presentation of each client's session and all the different types of keys involved
-                in the protocol. Clicking on them will unlock wiki pages. 
-            </Paragraph>
+                <SocialSubTitle>How to use</SocialSubTitle>
+                <Paragraph>Click the buttons to perform operations as signal clients and server, such as registering, initiating sessions and sending messages</Paragraph>
+                <Paragraph>The demo also shows the internals of the Signal protocol, including a detailed presentation of each client's session and all the different types of keys involved
+                    in the protocol. Clicking on them will unlock wiki pages.
+                </Paragraph>
             </>
-         )
+        )
+    }
+
+    const support = () => {
+        return (
+            <>
+                <SocialSubTitle>Support</SocialSubTitle>
+                <a href="https://www.buymeacoffee.com/wQG4COW00X" target="_blank"><Img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" /></a>
+            </>
+        )
     }
     return (
         <>
             {info()}
             {howToUse()}
-            <Social/>
+            <Social />
+            {support()}
         </>
+    )
+}
+
+function HomePage(props: any) {
+    const classes = useStyles();
+
+    return (
+        <Grid container className={props.visible === true ? classes.container: classes.hiddencontainer}>
+            <Grid item xs={4}>
+                <ClientView
+                    clientName={props.aliceName}
+                    otherClientName={props.bobName}
+                    getPreKeyBundleFunc={props.getPreKeyBundleFunc}
+                    otherHasIdentity={props.bHasIdentity}
+                    hasIdentity={props.aHasIdentity}
+                    registerFunc={props.registerFunc}
+                    sendMessageFunc={props.sendMessage}
+                />
+            </Grid>
+            <Grid item xs={4}>
+                <ServerView
+                    alicePreKeyBundle={props.alicePreKeyBundle}
+                    bobPreKeyBundle={props.bobPreKeyBundle}
+                    msgProps={props.msgProps} />
+            </Grid>
+            <Grid item xs={4}>
+                <ClientView
+                    clientName={props.bobName}
+                    otherClientName={props.aliceName}
+                    getPreKeyBundleFunc={props.getPreKeyBundleFunc}
+                    otherHasIdentity={props.aHasIdentity}
+                    hasIdentity={props.bHasIdentity}
+                    registerFunc={props.registerFunc}
+                    sendMessageFunc={props.sendMessage}
+                />
+            </Grid>
+        </Grid>
     )
 }

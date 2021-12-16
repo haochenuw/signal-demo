@@ -13,12 +13,12 @@ import ReactFlow, {
 
 const MyDiv = styled('Typography')({
     color: '#ff4400',
-    backgroundColor: 'aliceblue',
+    backgroundColor: 'white',
     padding: 8,
     borderRadius: 4,
     display: 'block', 
     textAlign: 'left', 
-    fontSize: 34, 
+    fontSize: 25, 
   });
 
 const useStyles = makeStyles({

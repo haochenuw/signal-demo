@@ -9,7 +9,7 @@ let generator = new Generator(180, {minimumRatio: 4.5});
 // show the last 10 chars of string 
 export default function Key(props) {
 
-    const selected = props.selected ? "selected" : ""
+    const selected = (props.selected === true)? "selected" : ""
     const classes = `key ${selected}`
     const display = props.display ?? "block"; 
 

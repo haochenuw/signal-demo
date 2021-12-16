@@ -18,16 +18,14 @@ color: #bcbcbc;
 }
 `;
 
-// export const SubTitle = withStyles({
-//     fontSize: "20px",
-//     textAlign: "left",
-//     color: "#bcbcbc",
-// })(Typography); 
 
 export const H3Title = styled.h3`
 font-size: 1.5em;
 text-align: left;
 color: #bcbcbc;
+&:hover {
+    cursor: pointer; 
+}
 `;
 
 export const StyledButton = withStyles({
@@ -46,3 +44,15 @@ export const StyledButton = withStyles({
       textTransform: "capitalize"
    }
   })(Button); 
+
+
+export const StyledAppBarButton = withStyles({
+    root: {
+      color: "white",
+      fontSize: "20px", 
+      margin: "10px", 
+   }, 
+   label: {
+      textTransform: "capitalize"
+   }
+})(Button); 

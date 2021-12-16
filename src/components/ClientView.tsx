@@ -20,11 +20,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import {Title, SubTitle} from './Styled.js'
 import { SignalDirectory, FullDirectoryEntry} from "../signal-directory";
 import {
-    KeyHelper,
-    SignedPublicPreKeyType,
     SignalProtocolAddress,
     SessionBuilder,
-    PreKeyType,
     SessionCipher,
     MessageType,
     SessionType,
@@ -93,6 +90,7 @@ interface Props {
     clientName: string, 
     otherClientName: string, 
     otherHasIdentity: boolean, 
+    hasIdentity: boolean, 
     getPreKeyBundleFunc: (name: string) => any, 
     registerFunc: (name: string, bundle: FullDirectoryEntry) => void, 
     sendMessageFunc: (to: string, from: string, message: MessageType) => void, 
@@ -100,7 +98,6 @@ interface Props {
 
 export default function ClientView(props: Props) {
     const classes = useStyles();
-    const [hasIdentity, setHasIdentity] = useState(false);
     const [hasSession, setHasSession] = useState(false);
     const [localStore] = useState(new SignalProtocolStore());
     const [processedMessages, setProcessedMessages] = useState<
@@ -113,6 +110,7 @@ export default function ClientView(props: Props) {
     const [processing, setProcessing] = useState(false);
     
     const [identityKeypair, setIdentityKeypair] = useState<KeyPairType | null>(null);  
+    const hasIdentity = props.hasIdentity; 
     const otherHasIdentity = props.otherHasIdentity;
     const otherClientAddress = new SignalProtocolAddress(props.otherClientName, 1);
 
@@ -135,9 +133,6 @@ export default function ClientView(props: Props) {
             setIdentityKeypair(IKa);
         }
     }
-    // useEffect(()=> {
-    //     fetchIdentityKey(); 
-    // }, );
 
     useEffect(()=>{
         var subscription = PubSub.subscribe('message', messageHandler);
@@ -177,7 +172,6 @@ export default function ClientView(props: Props) {
     const createIdentity = async () => {
         let registerPayload = await createID(props.clientName, localStore);
         props.registerFunc(props.clientName, registerPayload); 
-        setHasIdentity(true);
         PubSub.publish('discoverTopic', 'registration');
         fetchIdentityKey();
     };
@@ -308,7 +302,7 @@ export default function ClientView(props: Props) {
                 <SubTitle onClick={() => handleIdentityKeyClick()}>Identity Keys</SubTitle>
                 <Key desc={"identity private key "} keyArray = {identityKeypair?.privKey}/>
                 <Key desc={"identity public key "} keyArray = {identityKeypair?.pubKey}/>
-                {hasSession || !(hasIdentity && otherHasIdentity) ? (
+                {hasSession || !(hasIdentity && otherHasIdentity) || props.clientName === "Bob" ? (
                     <div></div>
                 ) : (
                     <Button

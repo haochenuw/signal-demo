@@ -26,6 +26,7 @@ const StyledTab = styled(Tab)({
 const useStyles = makeStyles({
     box: {
         "margin-left": '25px', 
+        "margin-top": '20px'
     },
 
     tab: {
@@ -112,18 +113,9 @@ export default function InfoPanel(props) {
 
     const classes = useStyles(); 
 
-    const tab = (label) => {
-        return (
-            <div>{label}</div>
-        )
-    }
-
     return (
     <Paper>
     <Grid container justifyContent="center" direction="row" spacing={10}> 
-        <Grid item xs={12}>
-            <Title>Wiki</Title>
-        </Grid>
         <Grid item xs={2}>
             <Box className={classes.box}>
             <Tabs 
@@ -138,7 +130,7 @@ export default function InfoPanel(props) {
                         if (readTopics[item.key] !== undefined){
                             return (<StyledTab key={index} label={item.title}/>); 
                         } else {
-                            return (<StyledTab key={index} label={"NEW!! " + item.title}/>); 
+                            return (<StyledTab key={index} label={item.title}/>); 
                         }
                     } else {
                         return <StyledTab  key={index} disabled icon={<LockIcon />}/>; 
@@ -147,7 +139,8 @@ export default function InfoPanel(props) {
             </Tabs>   
             </Box>
         </Grid>
-        <Grid item xs={10}>     
+        <Grid item xs={10}>    
+        <Box className={classes.box}>
         {topicsMetadata.map((item, index) => {
             if (selectedTab === index && props.discoveredTopics.includes(item.key)){
                 return (<Info className="infotext" key={index} 
@@ -159,6 +152,7 @@ export default function InfoPanel(props) {
                 return null; 
             }
         })}
+        </Box>
         </Grid>
     </Grid>
     </Paper>

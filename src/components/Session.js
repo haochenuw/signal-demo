@@ -21,7 +21,7 @@ export default function Session(props){
 
     return (
         <div className="sessionType">
-            <SubTitle>BaseKey</SubTitle>
+            <SubTitle onClick={() => {PubSub.publish('discoverTopic', 'baseKey');}}>BaseKey</SubTitle>
             <Key desc="base key" onClick={() => {PubSub.publish('discoverTopic', 'baseKey');}} keyArray={props.session.indexInfo.baseKey}/>
             <Ratchet clientName={props.name} ratchet = {props.session.currentRatchet} chains={props.session.chains}/>
         </div>
