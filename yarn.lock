@@ -1788,9 +1788,9 @@
   dependencies:
     ts-proto "^1.26.0"
 
-"@privacyresearch/libsignal-protocol-typescript@https://github.com/haochenuw/libsignal-typescript-fork.git":
+"@privacyresearch/libsignal-protocol-typescript@git://github.com/haochenuw/libsignal-typescript-fork.git":
   version "0.0.14"
-  resolved "https://github.com/haochenuw/libsignal-typescript-fork.git#aee6f2612d6d425854d6548322f2ac4acdd40994"
+  resolved "git://github.com/haochenuw/libsignal-typescript-fork.git#aee6f2612d6d425854d6548322f2ac4acdd40994"
   dependencies:
     "@privacyresearch/curve25519-typescript" "^0.0.10"
     "@privacyresearch/libsignal-protocol-protobuf-ts" "^0.0.8"
