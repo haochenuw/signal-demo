@@ -30,7 +30,6 @@
     "contrast-color-generator": "^0.1.1",
     "dagre": "^0.8.5",
     "highlight.js": "^10.1.2",
-    "lodash": "^4.17.21",
     "pathfinding": "^0.4.18",
     "paths-js": "^0.4.11",
     "pubsub-js": "^1.9.3",
