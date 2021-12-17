@@ -1776,25 +1776,24 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.10.2.tgz#0798c03351f0dea1a5a4cabddf26a55a7cbee590"
   integrity sha512-IXf3XA7+XyN7CP9gGh/XB0UxVMlvARGEgGXLubFICsUMGz6Q+DU+i4gGlpOxTjKvXjkJDJC8YdqdKkDj9qZHEQ==
 
-"@privacyresearch/curve25519-typescript@^0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@privacyresearch/curve25519-typescript/-/curve25519-typescript-0.0.9.tgz#0baee41d71136427214dc2d453c2c1d4ec70dedb"
-  integrity sha512-6UOLZbA1w+/g++/k/p7b0Yun5fBoqky11LCofvxjVu/ctb7QeqdhOSEvC5JWyGe+lOclhN6IV8gbLrqWjiet6Q==
+"@privacyresearch/curve25519-typescript@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@privacyresearch/curve25519-typescript/-/curve25519-typescript-0.0.10.tgz#4a47c86143ca4b015ea739a64979c5a2469ac519"
+  integrity sha512-ORRugHt5AeBwMt4itMoCp8te6Ff335rY9PqDXgQC2iUrx3QeeLaPB3oD1p4JgIqlS8EmB1/P2C1JpT/ZHEl9Cw==
 
-"@privacyresearch/libsignal-protocol-protobuf-ts@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@privacyresearch/libsignal-protocol-protobuf-ts/-/libsignal-protocol-protobuf-ts-0.0.7.tgz#88dea9a415e3acb39218a1a1bc6886c8c96d6ae9"
-  integrity sha512-DyVC8p19WuGYKIYmBKblPK4iZCcva/TbM89deOsZ5vtOf48XnnkHQuChhVApw4ZkawyIhAHWXCe4QYS+7ruHoQ==
+"@privacyresearch/libsignal-protocol-protobuf-ts@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@privacyresearch/libsignal-protocol-protobuf-ts/-/libsignal-protocol-protobuf-ts-0.0.8.tgz#5f8c6f70b1f50805b06fa38d81c0994f82e8562f"
+  integrity sha512-bgvpQ7eH8izwbrXPXzfQRWjWSiPHxjtUWLIO82VYfdWRn66yk9dIbHbiqawZk88yMV23PAub1nJd3VpPdlfJqw==
   dependencies:
     ts-proto "^1.26.0"
 
-"@privacyresearch/libsignal-protocol-typescript@^0.0.12":
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/@privacyresearch/libsignal-protocol-typescript/-/libsignal-protocol-typescript-0.0.12.tgz#a08924080c1319376d0e33ff260b17adccfd0749"
-  integrity sha512-cquyHj47V84tiJO9xb+++TdSUwyLLoZOJNbPQo7/bBKug9WRUQ7lg4dR3LbHrUG7ybC6O54YHJstWnfJLorT5A==
+"@privacyresearch/libsignal-protocol-typescript@https://github.com/haochenuw/libsignal-typescript-fork.git":
+  version "0.0.14"
+  resolved "https://github.com/haochenuw/libsignal-typescript-fork.git#aee6f2612d6d425854d6548322f2ac4acdd40994"
   dependencies:
-    "@privacyresearch/curve25519-typescript" "^0.0.9"
-    "@privacyresearch/libsignal-protocol-protobuf-ts" "^0.0.7"
+    "@privacyresearch/curve25519-typescript" "^0.0.10"
+    "@privacyresearch/libsignal-protocol-protobuf-ts" "^0.0.8"
     base64-js "^1.3.1"
 
 "@projectstorm/geometry@^6.6.1":
