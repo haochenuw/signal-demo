@@ -20,7 +20,7 @@
     "@mui/icons-material": "^5.2.0",
     "@mui/material": "^5.1.1",
     "@mui/system": "^5.1.1",
-    "@privacyresearch/libsignal-protocol-typescript": "git+https://github.com/visionmedia/express.git",
+    "@privacyresearch/libsignal-protocol-typescript": "git+https://github.com/haochenuw/libsignal-typescript-fork.git",
     "@projectstorm/react-diagrams": "^6.0.1-beta.7",
     "@types/pubsub-js": "^1.8.3",
     "@types/styled-components": "^5.1.15",
