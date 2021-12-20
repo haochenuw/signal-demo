@@ -4,13 +4,6 @@ import { Typography, Card } from '@mui/material';
 import { styled } from '@mui/system';
 import { makeStyles } from "@material-ui/core/styles";
 
-import ReactFlow, {
-    ReactFlowProvider,
-    addEdge,
-    removeElements,
-    Controls,
-  } from 'react-flow-renderer';
-
 const MyDiv = styled('Typography')({
     color: '#ff4400',
     backgroundColor: 'white',
@@ -38,9 +31,7 @@ export default function Info(props){
             <MyDiv>{item}</MyDiv>
         ))}
         {graphNode !== undefined && 
-        <ReactFlowProvider>
             {graphNode}
-        </ReactFlowProvider>
         }
         {graphNode === undefined && <div>No Graph</div>}
         </div>
