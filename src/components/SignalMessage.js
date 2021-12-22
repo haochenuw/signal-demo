@@ -68,7 +68,7 @@ export default function SignalMessage(props){
         if (type === SignalMessageType.PreKeyMessage) {
             PubSub.publish('discoverTopic', 'preKeyMessage');
         } else {
-            PubSub.publish('discoverTopic', 'whisperMessage');
+            PubSub.publish('discoverTopic', 'normalMessage');
         }
     }
 
