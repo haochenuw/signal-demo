@@ -20,7 +20,7 @@ export default function SocialFollow(props){
     return(
         <>
         <SocialSubTitle>Stay tuned</SocialSubTitle>
-        <a href="https://www.youtube.com/c/jamesqquick"
+        <a href="https://www.youtube.com/channel/UCv0t4FN7RMom6vyotdhEbUA/featured"
         className="youtube social">
         <FontAwesomeIcon color={"red"} icon={faYoutube} size="2x" />
         </a>

@@ -197,7 +197,11 @@ function App() {
         // publish message to child component
         PubSub.publish('message', message);
         // publish decryption wiki
-        PubSub.publish('discoverTopic', 'decryption');
+        if (message.message.type === 3){
+            PubSub.publish('discoverTopic', 'decryptPrekeyMessage');
+        } else {
+            PubSub.publish('discoverTopic', 'decryptNormalMessage');
+        }
 
         // remove message 
         const index = messages.indexOf(message);
@@ -311,6 +315,7 @@ function AboutPage(props: any) {
                 <Paragraph>The demo also shows the internals of the Signal protocol, including a detailed presentation of each client's session and all the different types of keys involved
                     in the protocol. Clicking on them will unlock wiki pages.
                 </Paragraph>
+                <Paragraph>A cool feature is keys in the protocol are color-coded according to the raw bytes. So the same keys will have the same color. Look for them! </Paragraph>
             </>
         )
     }
@@ -319,7 +324,7 @@ function AboutPage(props: any) {
         return (
             <>
                 <SocialSubTitle>Support</SocialSubTitle>
-                <a href="https://www.buymeacoffee.com/wQG4COW00X" target="_blank"><Img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" /></a>
+                <a href="https://www.buymeacoffee.com/haochen" target="_blank"><Img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" /></a>
             </>
         )
     }

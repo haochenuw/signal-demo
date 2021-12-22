@@ -31,7 +31,7 @@ export default function Info(props){
             <MyDiv>{item}</MyDiv>
         ))}
         {graphNode !== undefined && 
-            {graphNode}
+            graphNode
         }
         {graphNode === undefined && <div>No Graph</div>}
         </div>

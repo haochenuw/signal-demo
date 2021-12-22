@@ -14,8 +14,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import {Box} from "@material-ui/core"; 
 import LockIcon from '@material-ui/icons/Lock';
 import { withStyles } from "@material-ui/core/styles";
-import {Title, SubTitle} from './Styled.js'
 import "../styles/styles.css"
+
 const StyledTab = styled(Tab)({
     borderBottom: '1px solid #e8e8e8',
     backgroundColor: '#103174',
@@ -37,69 +37,6 @@ const useStyles = makeStyles({
 
 });
 
-
-const topicsMetadata = [
-    {
-        key: "registration", 
-        title: "Registration", 
-    }, 
-    {
-        key: "preKeyBundle", 
-        title: "PreKey Bundle", 
-    }, 
-    {
-        key: "x3dh", 
-        title: "X3DH",  
-    },
-    {
-        key: "session", 
-        title: "Session",  
-    },
-    {
-        key: "baseKey", 
-        title: "BaseKey",  
-    },
-    {
-        key: "rootKey", 
-        title: "Root Key",  
-    },
-    {
-        key: "ratchet", 
-        title: "Ratchet",  
-    },
-    {
-        key: "chain", 
-        title: "Chain",  
-    },
-    {
-        key: "preKeyMessage", 
-        title: "PreKey Message",  
-    },
-    {
-        key: "whisperMessage", 
-        title: "Whisper Message",  
-    },
-    {
-        key: "encryption", 
-        title: "Encryption",  
-    },
-    {
-        key: "decryption", 
-        title: "Decryption",  
-    },
-    {
-        key: "chainKey", 
-        title: "Chain Key",  
-    },
-    {
-        key: "messageKey", 
-        title: "Message Key",  
-    },
-    {
-        key: "identityKey", 
-        title: "Identity Key",  
-    },
-]
 
 export default function InfoPanel(props) {
     
@@ -125,12 +62,13 @@ export default function InfoPanel(props) {
                 orientation="vertical"
                 indicatorColor="primary"
             >
-                {topicsMetadata.map((item, index) => {
-                    if (props.discoveredTopics.includes(item.key)){
-                        if (readTopics[item.key] !== undefined){
-                            return (<StyledTab key={index} label={item.title}/>); 
+                {Object.keys(textDescriptions).map((key, index) => {
+                    if (props.discoveredTopics.includes(key)){
+                        const value = textDescriptions[key]; 
+                        if (readTopics[key] !== undefined){
+                            return (<StyledTab key={index} label={value.title}/>); 
                         } else {
-                            return (<StyledTab key={index} label={item.title}/>); 
+                            return (<StyledTab key={index} label={value.title}/>); 
                         }
                     } else {
                         return <StyledTab  key={index} disabled icon={<LockIcon />}/>; 
@@ -141,13 +79,14 @@ export default function InfoPanel(props) {
         </Grid>
         <Grid item xs={10}>    
         <Box className={classes.box}>
-        {topicsMetadata.map((item, index) => {
-            if (selectedTab === index && props.discoveredTopics.includes(item.key)){
+        {Object.keys(textDescriptions).map((key, index) => {
+            const value = textDescriptions[key]; 
+            if (selectedTab === index && props.discoveredTopics.includes(key)){
                 return (<Info className="infotext" key={index} 
-                            title={item.title} 
-                            descriptions={textDescriptions[item.key]} 
+                            title={value.title} 
+                            descriptions={value.content} 
                             graphNode={<BeautifulDiagram 
-                                graphDef={graphDefs[item.key]}/>}/>); 
+                                graphDef={graphDefs[key]}/>}/>); 
             } else {
                 return null; 
             }
