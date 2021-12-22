@@ -42,14 +42,6 @@ export const textDescriptions = {
             "The client then include the basekey in each prekey message.",
             "The receiver of the prekey message uses the basekey as input into its X3DH step"],
     },
-    "prekeyBundle": {
-        title: "Prekey Bundle",
-        content: [
-            "When Alice wants to talk to Bob, it downloads a prekeyBundle of Bob from the server",
-            "The prekey Bundle contains (at least) Bob's identity key and a signed pre key",
-            "Alice uses the prekey Bundle to initialize a session with Bob, leveraging X3DH"
-        ],
-    },
 
     "chain": {
         title: "Chain",
