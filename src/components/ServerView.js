@@ -85,13 +85,13 @@ function PendingMessages(props) {
             {
             messages.map((m) => (
                     <>
-                    <Grid xs = {6} item key={m.id}>
+                    <Grid xs = {12} lg={6} item key={m.id}>
                         <SignalMessage m={m}/>
                     </Grid>
-                    <Grid xs = {3} item>
+                    <Grid xs = {6} lg={3} item>
                         <ForwardDropButton onClick={() => forwardMsg(m)}>Forward</ForwardDropButton>
                     </Grid>
-                    <Grid xs = {3} item>
+                    <Grid xs = {6} lg={3} item>
                         <ForwardDropButton onClick={() => dropMsg(m)}>Drop</ForwardDropButton>
                     </Grid>
                     </>

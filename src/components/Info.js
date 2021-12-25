@@ -11,13 +11,18 @@ const MyDiv = styled('Typography')({
     borderRadius: 4,
     display: 'block', 
     textAlign: 'left', 
-    fontSize: 25, 
+    fontSize: "3vh", 
   });
 
 const useStyles = makeStyles({
     root: {
         padding: '0px', 
     },
+
+    title: {
+        overflowWrap: "break-word", 
+        wordWrap: "break-word", 
+    }
 });
 
 export default function Info(props){
@@ -26,7 +31,7 @@ export default function Info(props){
     return(
         <section>
         <div className={`${classes.root} ${props.className}`} height="100%" flex="1">
-        <Typography variant="h2" align="left">{title}</Typography>
+        <Typography className={classes.title} variant="h2" align="left">{title}</Typography>
         {props.descriptions.map((item) => (
             <MyDiv>{item}</MyDiv>
         ))}

@@ -35,6 +35,13 @@ const useStyles = makeStyles({
         borderRadius: "5px"
     }, 
 
+    root: {
+        paddingBottom: 16,
+        paddingRight: 16,
+        marginTop: 16,
+        marginLeft: "auto",
+        marginRight: "auto",
+    },
 });
 
 
@@ -52,8 +59,8 @@ export default function InfoPanel(props) {
 
     return (
     <Paper>
-    <Grid container justifyContent="center" direction="row" spacing={10}> 
-        <Grid item xs={2}>
+    <Grid container justifyContent="center" direction="row" className={classes.root}> 
+        <Grid item xs={4} lg={2}>
             <Box className={classes.box}>
             <Tabs 
                 value={selectedTab} 
@@ -77,7 +84,7 @@ export default function InfoPanel(props) {
             </Tabs>   
             </Box>
         </Grid>
-        <Grid item xs={10}>    
+        <Grid item xs={8} lg={10}>    
         <Box className={classes.box}>
         {Object.keys(textDescriptions).map((key, index) => {
             const value = textDescriptions[key]; 

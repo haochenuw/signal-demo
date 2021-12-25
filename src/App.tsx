@@ -3,6 +3,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import PubSub from 'pubsub-js'
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import AppBar from '@mui/material/AppBar';
+import Box from "@mui/material/Box";
+import MenuIcon from "@mui/icons-material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import {
+    usePopupState,
+    bindTrigger,
+    bindMenu,
+  } from 'material-ui-popup-state/hooks'
 
 import 'bootstrap/dist/css/bootstrap.min.css'; // Needed for progress bar to show up!
 import {
@@ -139,6 +148,9 @@ function App() {
     const [alicePreKeyBundle, setAlicePreKeyBundle] = useState<FullDirectoryEntry | null>(null);
     const [bobPreKeyBundle, setBobPreKeyBundle] = useState<FullDirectoryEntry | null>(null);
 
+    // menu popup
+    const popupState = usePopupState({ variant: 'popover', popupId: 'demoMenu' })
+
     const classes = useStyles();
 
     const sendMessage = (to: string, from: string, message: MessageType) => {
@@ -197,7 +209,7 @@ function App() {
         // publish message to child component
         PubSub.publish('message', message);
         // publish decryption wiki
-        if (message.message.type === 3){
+        if (message.message.type === 3) {
             PubSub.publish('discoverTopic', 'decryptPrekeyMessage');
         } else {
             PubSub.publish('discoverTopic', 'decryptNormalMessage');
@@ -229,19 +241,45 @@ function App() {
         setCurrentPage(page)
     }
 
+    const handleMenuItemClick = (page: string) => {
+        console.log("menu item clicked, " + page)
+        setCurrentPage(page)
+        popupState.close()
+    }
+
     return (
         <div className="App">
             <AppBar position="sticky">
                 <Toolbar>
-                    <Typography variant="h6" noWrap>Live Demo of the Signal Protocol</Typography>
-                    {pages.map((page) => (
-                        <StyledAppBarButton
-                            key={page}
-                            onClick={() => handlePageClick(page)}
+                    <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+                        <MenuIcon {...bindTrigger(popupState)} />
+                        <Menu
+                            {...bindMenu(popupState)}
+                            id="menu-appbar"
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                            sx={{
+                                display: { xs: "block", md: "none" }
+                            }}
                         >
-                            {page}
-                        </StyledAppBarButton>
-                    ))}
+                            {pages.map((page) => (
+                                <MenuItem key={page} onClick={()=>{handleMenuItemClick(page)}}>
+                                    <Typography>{page}</Typography>
+                                </MenuItem>
+                            ))}
+                        </Menu>
+                    </Box>
+                    <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+                        <Typography variant="h6" noWrap>Live Demo of the Signal Protocol</Typography>
+                        {pages.map((page) => (
+                            <StyledAppBarButton
+                                key={page}
+                                onClick={() => handlePageClick(page)}
+                            >
+                                {page}
+                            </StyledAppBarButton>
+                        ))}
+                    </Box>
                     <div className="wiki_progress">
                         <span>{`${entriesUnlocked} / ${total} wiki entiries unlocked!`}</span>
                         <StyledProgressBar variant="success" animated={true} striped={true} now={entriesUnlocked} max={total} min={0} />
@@ -249,24 +287,24 @@ function App() {
                 </Toolbar>
             </AppBar>
             <HomePage
-              aliceName={aliceName}
-              bobName={bobName}
-              aHasIdentity={aHasIdentity}
-              bHasIdentity={bHasIdentity}
-              alicePreKeyBundle={alicePreKeyBundle}
-              bobPreKeyBundle={bobPreKeyBundle}
-              msgProps={msgProps}
-              registerFunc={registerFunc}
-              sendMessage={sendMessage}
-              getPreKeyBundleFunc={getPreKeyBundleFunc}
-              visible = {currentPage === "Home"}
-              key="home"
+                aliceName={aliceName}
+                bobName={bobName}
+                aHasIdentity={aHasIdentity}
+                bHasIdentity={bHasIdentity}
+                alicePreKeyBundle={alicePreKeyBundle}
+                bobPreKeyBundle={bobPreKeyBundle}
+                msgProps={msgProps}
+                registerFunc={registerFunc}
+                sendMessage={sendMessage}
+                getPreKeyBundleFunc={getPreKeyBundleFunc}
+                visible={currentPage === "Home"}
+                key="home"
             />
-            
-            {currentPage === "Wiki" && <WikiPage discoveredTopics={discoveredTopics} />}
-            {currentPage === "About" && <AboutPage />}
 
-        </div>
+            { currentPage === "Wiki" && <WikiPage discoveredTopics={discoveredTopics} /> }
+    { currentPage === "About" && <AboutPage /> }
+
+        </div >
     );
 }
 
@@ -342,8 +380,8 @@ function HomePage(props: any) {
     const classes = useStyles();
 
     return (
-        <Grid container className={props.visible === true ? classes.container: classes.hiddencontainer}>
-            <Grid item xs={4}>
+        <Grid container className={props.visible === true ? classes.container : classes.hiddencontainer}>
+            <Grid item xs={12} lg={4}>
                 <ClientView
                     clientName={props.aliceName}
                     otherClientName={props.bobName}
@@ -354,13 +392,13 @@ function HomePage(props: any) {
                     sendMessageFunc={props.sendMessage}
                 />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12} lg={4}>
                 <ServerView
                     alicePreKeyBundle={props.alicePreKeyBundle}
                     bobPreKeyBundle={props.bobPreKeyBundle}
                     msgProps={props.msgProps} />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12} lg={4}>
                 <ClientView
                     clientName={props.bobName}
                     otherClientName={props.aliceName}
