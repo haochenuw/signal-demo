@@ -54,7 +54,7 @@ export const textDescriptions = {
 
     "rootKey": {
         title: "Rootkey",
-        content: ["Important invariant: the rootkeys are always the same in the two client's sessions",
+        content: ["Important invariant: the rootkeys are always the same in both client's sessions",
             "The first rootkeys are the same due to X3DH",
             "The client derives each new rootkey using a Key Derivation Function (KDF)",
             "The KDF combines the entropy of the current rootkey, plus additional entropy from a Diffie-Hellman",
@@ -80,13 +80,14 @@ export const textDescriptions = {
 
     "encryption": {
         title: "Encryption",
-        content: ["When encrypting a message, a client will derive a message from the newest sending chain"],
+        content: ["When encrypting a message, a client will derive and use a message key from its newest sending chain", "Then, it will append the ephemeral public key used to derive the sending chain to the message", 
+                  "If the message is a prekey message, the client appends some additional public keys."],
     },
 
 
     "decryptPrekeyMessage": {
         title: "Decrypting a Prekey Message",
-        content: ["Upon getting a prekey message, the receiver creates a session",
+        content: ["Upon getting a prekey message, the receiver creates a session.",
             "First, it parses out an identity pulic key and an ephemeral public key from the message, and performs an X3DH.",
             "Then, from the X3DH result the receiver derives its first rootKey.",
             "The rest of decryption is the same as decrypting a normal message"],
