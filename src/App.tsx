@@ -281,7 +281,7 @@ function App() {
                         ))}
                     </Box>
                     <div className="wiki_progress">
-                        <span>{`${entriesUnlocked} / ${total} wiki entiries unlocked!`}</span>
+                        <span>{`${entriesUnlocked} / ${total} wikis unlocked!`}</span>
                         <StyledProgressBar variant="success" animated={true} striped={true} now={entriesUnlocked} max={total} min={0} />
                     </div>
                 </Toolbar>

@@ -25,8 +25,8 @@ export const textDescriptions = {
         title: "Ratchet",
         content: ["A ratchet consists of a rootkey, a remote ephemeral public key, and a local ephemeral keypair",
             "The client generates the local ephemeral keypair from random",
-            "The initial rootkey is an outpu of X3DH ",
-            "Then, the rootkey updates itself by taking into entropy from the remote and local ephemeral keys"],
+            "The initial rootkey comes from running X3DH ",
+            "Then, the root key gets updated by incoporating entropy from both local and remote ephemeral keys"],
     },
     "x3dh": {
         title: "X3DH",
@@ -54,12 +54,12 @@ export const textDescriptions = {
 
     "rootKey": {
         title: "Rootkey",
-        content: ["Important invariant: the rootkeys are always the same in both client's sessions",
-            "The first rootkeys are the same due to X3DH",
+        content: ["Important invariant: the rootkeys are always the same in Alice and Bob's sessions with each other",
+            "The initial rootkeys are the same thanks to X3DH",
             "The client derives each new rootkey using a Key Derivation Function (KDF)",
-            "The KDF combines the entropy of the current rootkey, plus additional entropy from a Diffie-Hellman",
-            "The additioanl Diffie-Hellman uses a fresh ephemeral private key that the client generates locally, and a remote public key from the other client",
-            "This process updates the rootkey and generates a chain key."],
+            "The KDF combines the current rootkey and the output of a Diffie-Hellman step",
+            "The Diffie-Hellman step uses a fresh ephemeral private key that the client generates locally, and a remote public key from the other client",
+            "This KDF then outputs two keys: a new rootkey and a chain key."],
     },
 
     "preKeyMessage": {
