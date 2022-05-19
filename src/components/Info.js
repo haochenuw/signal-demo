@@ -35,7 +35,7 @@ export default function Info(props){
         {props.descriptions.map((item) => (
             <MyDiv>{item}</MyDiv>
         ))}
-        {graphNode !== undefined && 
+        {graphNode !== undefined && graphNode !== null && 
             graphNode
         }
         {graphNode === undefined && <div>No Graph</div>}
