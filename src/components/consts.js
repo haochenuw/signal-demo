@@ -57,25 +57,24 @@ export const textDescriptions = {
         content: ["Important invariant: the rootkeys are always the same in Alice and Bob's sessions with each other",
             "The initial rootkeys are the same thanks to X3DH",
             "The client derives each new rootkey using a Key Derivation Function (KDF)",
-            "The KDF combines the current rootkey and the output of a Diffie-Hellman step",
+            "The KDF combines the current rootkey and the output of a Diffie-Hellman step.",
             "The Diffie-Hellman step uses a fresh ephemeral private key that the client generates locally, and a remote public key from the other client",
             "This KDF then outputs two keys: a new rootkey and a chain key."],
     },
 
     "preKeyMessage": {
         title: "Prekey Message",
-        content: ["Signal has two types of messages: prekey Message and normal Message",
+        content: ["Signal has two types of messages: prekey Message and normal Message.",
             "Client sends a prekey message when the recipient does not have a session yet.",
-            "A prekey message is a whisperMessage plus several additional pieces of data",
-            "the sender's identity public key, sender's ephemeral public key, and the id of receiver's signed prekey"],
+            "A prekey message is a normal message plus some additional pieces of data, including the sender's identity public key, sender's baseKey, and the id of receiver's signed prekey."],
     },
 
     "normalMessage": {
         title: "Normal Message",
-        content: ["A normal signal message consists of a ciphertext, a counter, and an ephemeral public key",
-            "the ciphertext comes from encrypting the plaintext with a messageKey",
-            "the counter denotes the location of the message key in its chain",
-            "the ephemeral public key is used to identify which chain is used to encrypt this message, and for receiver to perform Diffie-Hellman to reconstruct that chain"],
+        content: ["A normal signal message consists of a ciphertext, a counter, and an ephemeral public key.",
+            "The ciphertext comes from encrypting the message with a messageKey.",
+            "The counter denotes the location of the message key in its chain.",
+            "The ephemeral public key is used to identify which chain is used to encrypt this message. The receiver can perform Diffie-Hellman to reconstruct that chain."],
     },
 
     "encryption": {
@@ -88,16 +87,17 @@ export const textDescriptions = {
     "decryptPrekeyMessage": {
         title: "Decrypting a Prekey Message",
         content: ["Upon getting a prekey message, the receiver creates a session.",
-            "First, it parses out an identity pulic key and an ephemeral public key from the message, and performs an X3DH.",
+            "First, it parses out sender's identity pulic key and baseKey from the message, and performs an X3DH key exchange.",
             "Then, from the X3DH result the receiver derives its first rootKey.",
             "The rest of decryption is the same as decrypting a normal message"],
     },
 
     "decryptNormalMessage": {
         title: "Decrypting a Normal Message",
-        content: ["The receiver first parses out an ephemeral public key from the message",
-            "Then, it uses the ephemeral public key to locate a receiving chain, and move the chain forward to generate message keys",
-            "Finally, the receiver uses the generated message keys to decrypt the message"],
+        content: ["The receiver first parses out an ephemeral public key from the message.",
+            "Then, it uses the ephemeral public key to locate a receiving chain", 
+            "Then, the receiver looks at the counter in the message and computes the (counter)-th message key in that chain.",
+            "Finally, the receiver uses the generated message key to decrypt the ciphertext in the message."],
     },
 
     "identityKey": {

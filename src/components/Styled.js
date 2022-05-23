@@ -56,3 +56,14 @@ export const StyledAppBarButton = withStyles({
       textTransform: "capitalize"
    }
 })(Button); 
+
+export const StyledAppTitle = withStyles({
+    root: {
+      color: "white",
+      fontSize: "18px", 
+      margin: "10px", 
+   }, 
+   label: {
+    textTransform: "capitalize"
+   }
+})(Button); 

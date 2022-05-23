@@ -38,7 +38,7 @@ import { textDescriptions } from "./components/consts.js"
 import ClientView from "./components/ClientView";
 import ServerView from "./components/ServerView.js"
 import Social, { SocialSubTitle } from "./components/Social";
-import { StyledAppBarButton } from "./components/Styled";
+import { StyledAppBarButton, StyledAppTitle} from "./components/Styled";
 import WikiPage from "./components/WikiPage";
 
 const StyledProgressBar = styled(ProgressBar)`
@@ -270,7 +270,7 @@ function App() {
                         </Menu>
                     </Box>
                     <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-                        <Typography variant="h6" noWrap>Live Demo of the Signal Protocol</Typography>
+                        <StyledAppTitle>Live Demo of the Signal Protocol</StyledAppTitle>
                         {pages.map((page) => (
                             <StyledAppBarButton
                                 key={page}
@@ -282,7 +282,7 @@ function App() {
                     </Box>
                     <div className="wiki_progress">
                         <span>{`${entriesUnlocked} / ${total} wikis unlocked!`}</span>
-                        <StyledProgressBar variant="success" animated={true} striped={true} now={entriesUnlocked} max={total} min={0} />
+                        <StyledProgressBar variant="success" striped={true} now={entriesUnlocked} max={total} min={0} />
                     </div>
                 </Toolbar>
             </AppBar>
