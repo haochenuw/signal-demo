@@ -19,5 +19,9 @@ cd ..
 npm i
 npm link @privacyresearch/libsignal-protocol-typescript
 
-# pm2 start (assume pm2)
-npm start
+# Install pm2 globally
+npm install -g pm2
+
+# Start the project using pm2
+cd /path/to/project
+pm2 start npm --name "my-app" -- start
