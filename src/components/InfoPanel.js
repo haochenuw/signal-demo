@@ -18,7 +18,7 @@ import "../styles/styles.css"
 
 const StyledTab = styled(Tab)({
     borderBottom: '1px solid #e8e8e8',
-    backgroundColor: '#103174',
+    backgroundColor: '#19A7CE',
     borderRadius: "5px",
     color: "white"
 });

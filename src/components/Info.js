@@ -5,28 +5,27 @@ import { styled } from '@mui/system';
 import { makeStyles } from "@material-ui/core/styles";
 
 const MyDiv = styled('Typography')({
-    color: '#ff4400',
+    color: '#2b2b2b',
     backgroundColor: 'white',
     padding: 8,
-    borderRadius: 4,
-    display: 'block', 
-    textAlign: 'left', 
-    fontSize: "3vh", 
+    display: 'block',
+    textAlign: 'left',
+    fontSize: "2.0vh",
   });
 
 const useStyles = makeStyles({
     root: {
-        padding: '0px', 
+        padding: '0px',
     },
 
     title: {
-        overflowWrap: "break-word", 
-        wordWrap: "break-word", 
+        overflowWrap: "break-word",
+        wordWrap: "break-word",
     }
 });
 
 export default function Info(props){
-    const classes = useStyles(); 
+    const classes = useStyles();
     const { graphNode, descriptions, title, ...other } = props;
     return(
         <section>
@@ -35,7 +34,7 @@ export default function Info(props){
         {props.descriptions.map((item) => (
             <MyDiv>{item}</MyDiv>
         ))}
-        {graphNode !== undefined && graphNode !== null && 
+        {graphNode !== undefined && graphNode !== null &&
             graphNode
         }
         {graphNode === undefined && <div>No Graph</div>}

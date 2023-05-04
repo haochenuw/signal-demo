@@ -2,7 +2,7 @@
 //     chainType: ChainType
 //     chainKey: { key: T; counter: number }
 //     messageKeys: { [key: number]: T }
-//     chainKeyHistory: Array<T>; 
+//     chainKeyHistory: Array<T>;
 // }
 import PubSub from 'pubsub-js'
 import React, {useState} from "react"
@@ -18,7 +18,7 @@ export default function FancyChain(props) {
     const handleOnClick = () => {
         setShowMessageKeys(!showMessageKeys)
     }
-    const chainTypeStr = props.chain.chainType === 1 ? "Sending" : "Receiving"; 
+    const chainTypeStr = props.chain.chainType === 1 ? "Sending" : "Receiving";
 
     const handleChainTitleClick = () => {
         console.log('chain title clicked')
@@ -37,8 +37,8 @@ export default function FancyChain(props) {
         <>
             <H3Title onClick={()=> handleChainTitleClick()}>{chainTypeStr} Chain</H3Title>
             <StyledButton onClick={() => {
-                handleOnClick(); 
-            }}>Show/Hide Message keys</StyledButton>
+                handleOnClick();
+            }}>Toggle Message keys</StyledButton>
             <Grid container spacing={2} justify="center">
                 <Grid item xs={6}>
                 {props.chain.chainKeyHistory.map((item, index) => (

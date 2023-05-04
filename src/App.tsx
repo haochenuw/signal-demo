@@ -43,7 +43,7 @@ import WikiPage from "./components/WikiPage";
 
 const StyledProgressBar = styled(ProgressBar)`
   height: 10px;
-  width: 100%; 
+  width: 100%;
 `;
 
 const pages = ["Home", "Wiki", "About"];
@@ -215,7 +215,7 @@ function App() {
             PubSub.publish('discoverTopic', 'decryptNormalMessage');
         }
 
-        // remove message 
+        // remove message
         const index = messages.indexOf(message);
         if (index > -1) {
             messages.splice(index, 1);
@@ -322,8 +322,8 @@ const Paragraph = styled.p`
 font-size: 22px;
 text-align: left;
 color: "black";
-margin: 20px; 
-width: 80%; 
+margin: 20px;
+width: 80%;
 `;
 
 const Img = styled.img`
@@ -335,7 +335,7 @@ function AboutPage(props: any) {
     const info = () => {
         return (
             <>
-                <SocialSubTitle>Info</SocialSubTitle>
+                <SocialSubTitle>Information</SocialSubTitle>
                 <Paragraph>This interactive demo is made by Hao Chen
                     and is available on <a href="https://github.com/haochenuw/signal-demo" target="_blank">github</a>.
                     It is based on the open source implementation of
@@ -348,12 +348,12 @@ function AboutPage(props: any) {
     const howToUse = () => {
         return (
             <>
-                <SocialSubTitle>How to use</SocialSubTitle>
-                <Paragraph>Click the buttons to perform operations as signal clients and server, such as registering, initiating sessions and sending messages</Paragraph>
-                <Paragraph>The demo also shows the internals of the Signal protocol, including a detailed presentation of each client's session and all the different types of keys involved
+                <SocialSubTitle>How To</SocialSubTitle>
+                <Paragraph>Click on the buttons to perform operations as signal clients and server, such as registering, initiating sessions and sending messages.</Paragraph>
+                <Paragraph>The demo reveals the internals of the Signal protocol, including a detailed representation of each client's session and all the cryptographic keys involved
                     in the protocol. Clicking on them will unlock wiki pages.
                 </Paragraph>
-                <Paragraph>A cool feature is keys in the protocol are color-coded according to the raw bytes. So the same keys will have the same color. Look for them! </Paragraph>
+                <Paragraph>A cool feature is keys are color-coded based on their raw byte values. So the same key will have the same color. Look for them! </Paragraph>
             </>
         )
     }
@@ -361,7 +361,8 @@ function AboutPage(props: any) {
     const support = () => {
         return (
             <>
-                <SocialSubTitle>Support</SocialSubTitle>
+                <SocialSubTitle>Support My Work</SocialSubTitle>
+                <Paragraph>This project is completely free and I am paying for the server on my own cost. If you enjoy it, please consider supporting me through the link below: </Paragraph>
                 <a href="https://www.buymeacoffee.com/haochen" target="_blank"><Img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" /></a>
             </>
         )
@@ -370,8 +371,8 @@ function AboutPage(props: any) {
         <>
             {info()}
             {howToUse()}
-            <Social />
             {support()}
+            <Social />
         </>
     )
 }

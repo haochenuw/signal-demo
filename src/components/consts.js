@@ -1,7 +1,7 @@
 export const textDescriptions = {
     "registration": {
         title: "Registration",
-        content: ["To register, a client generates many public/private keypairs", "These keypairs are given names: one identity key, some signed prekeys, and many onetime prekeys",
+        content: ["To register, a client generates many public/private keypairs, including one identity key, some signed prekeys, and many onetime prekeys",
             "The client sends the public keys to the Signal server, who stores them alongside the client's ID"],
     },
     "chainKey": {
@@ -23,10 +23,11 @@ export const textDescriptions = {
     },
     "ratchet": {
         title: "Ratchet",
-        content: ["A ratchet consists of a rootkey, a remote ephemeral public key, and a local ephemeral keypair",
-            "Each client generates its local ephemeral keypairs randomly",
+        content: ["A ratchet consists of a rootkey. And optionally, a remote ephemeral public key, a local ephemeral keypair, and a chain;",
             "The initial rootkey comes from running X3DH",
-            "Then, the root key gets updated by incoporating entropy from both local and remote ephemeral keys"],
+            "Each client generates its local ephemeral keypairs randomly",
+            "Then, the root key gets updated by incoporating entropy from both local and remote ephemeral keys",
+            "The chain's first chain key is derived from the rootkey of the ratchet."],
     },
     "x3dh": {
         title: "X3DH",
@@ -45,18 +46,17 @@ export const textDescriptions = {
 
     "chain": {
         title: "Chain",
-        content: ["A chain is a list of chain keys; each chain key derives a message key except the last one",
-            "There are two types of chains: sending and receiving",
-            "The chain type alternates: if one chain is sending, then the next chain is receiving",
-            "The chain type also flips on the other client: a sending chain for Alice is a receiving chain for Bob"]
+        content: ["A chain consists of a list of chain keys; each chain key is used to derive a message key, except the last one;",
+            "There are two types of chains: sending and receiving;",
+            "The chain types are alternating: if one chain is a sending chain, then the next chain is receiving chain;",
+            "The type of chain flips on the other client: a sending chain for Alice is a receiving chain for Bob."]
     },
 
     "rootKey": {
         title: "Rootkey",
-        content: ["Important invariant: the rootkeys are always the same in Alice and Bob's sessions with each other",
-            "The initial rootkeys are the same thanks to X3DH",
-            "The client derives each new rootkey using a Key Derivation Function (KDF)",
-            "The KDF combines the current rootkey and the output of a Diffie-Hellman step.",
+        content: ["Important invariant: the rootkeys are always the same in Alice and Bob's sessions;",
+            "The initial rootkeys are the same, due to X3DH",
+            "The client derives each new rootkey using a Key Derivation Function (KDF), which combines the current rootkey and the output of a Diffie-Hellman step.",
             "The Diffie-Hellman step uses a fresh ephemeral private key that the client generates locally, and a remote public key from the other client",
             "This KDF then outputs two keys: a new rootkey and a chain key."],
     },
@@ -78,9 +78,9 @@ export const textDescriptions = {
 
     "encryption": {
         title: "Encryption",
-        content: ["When encrypting a message, a client will derive and use a new message key from the latest sending chain", 
-                  "Then, it will append the ephemeral public key in the Ratchet from which that sending chain was created", 
-                  "Client also appends the index of the message key in its chain", 
+        content: ["When encrypting a message, a client will derive and use a new message key from the latest sending chain",
+                  "Then, it will append the ephemeral public key in the Ratchet from which that sending chain was created",
+                  "Client also appends the index of the message key in its chain",
                   "Finally, the client appends some additional data to the message if it is a prekey message. These include the baseKey and the id of the receiver's signed prekey."],
     },
 
@@ -96,7 +96,7 @@ export const textDescriptions = {
     "decryptNormalMessage": {
         title: "Decrypting a Normal Message",
         content: ["The receiver first parses out an ephemeral public key from the message.",
-            "Then, it uses the ephemeral public key to locate a receiving chain. If no receiving chain is found, one will be created by updating the ratchet", 
+            "Then, it uses the ephemeral public key to locate a receiving chain. If no receiving chain is found, one will be created by updating the ratchet",
             "Then, the receiver looks at the counter in the message and computes the (counter)-th message key in that chain.",
             "Finally, the receiver uses the generated message key to decrypt the ciphertext in the message."],
     },
