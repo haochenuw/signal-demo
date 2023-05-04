@@ -23,5 +23,4 @@ npm link @privacyresearch/libsignal-protocol-typescript
 npm install -g pm2
 
 # Start the project using pm2
-cd /path/to/project
-pm2 start npm --name "my-app" -- start
+pm2 start npm --name "signal-demo-app" -- start
