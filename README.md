@@ -77,11 +77,11 @@ Then, put the following into the file 001-signal.conf
 6. Setup SSL config (note: this is required for crypto functionalities to work)
 ```
 sudo apt-get install openssl
-  48  sudo a2enmod ssl
-   49  sudo a2enmod rewrite
-   51  sudo mkdir /etc/apache2/certs
+sudo a2enmod ssl
+sudo a2enmod rewrite
+sudo mkdir /etc/apache2/certs
 ```
-Then, go into /etc/apache2/apache2.conf and change the section to be this: 
+Then, go into /etc/apache2/apache2.conf and change the section to look like this: 
 
 ```
 <Directory /var/www/>
