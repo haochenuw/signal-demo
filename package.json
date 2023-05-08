@@ -40,7 +40,6 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "prebuild": "yarn link @privacyresearch/libsignal-protocol-typescript",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject"
