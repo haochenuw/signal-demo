@@ -92,8 +92,8 @@ Then, go into /etc/apache2/apache2.conf and change the section to look like this
 ``` 
 Then, generate a self-signed cert
 ```
-   52  cd /etc/apache2/certs
-   53  sudo openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out apache.crt -keyout apache.key
+cd /etc/apache2/certs
+sudo openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out apache.crt -keyout apache.key
 ```
 
 7. start service 
