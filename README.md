@@ -7,7 +7,7 @@ To deploy this website to AWS EC2,
 
 1. launch a EC2 instance. Allow http and https in the security group config. 
 
-2. Install necessary packages and clone this repository 
+2. SSH into the instance, install necessary packages and clone this repository 
 ```
 # Install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
