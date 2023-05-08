@@ -8,7 +8,6 @@ To deploy this website to AWS EC2,
 1. launch a EC2 instance. Allow http and https in the security group config. 
 
 2. Install necessary packages and clone this repository 
-
 ```
 # Install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
@@ -21,14 +20,9 @@ export NVM_DIR="$HOME/.nvm"
 # Install Node.js version 16.20.0
 nvm install 16.20.0
 
-# Install Git and nginx
+# Install Git and apache2
 sudo apt-get update
-sudo apt-get install git nginx apache2 -y
-
-# start nginx
-#sudo systemctl start nginx
-
-
+sudo apt-get install git apache2 -y
 
 # clone the signal demo app if needed
 directory_path="./signal-demo"
@@ -39,7 +33,7 @@ else
     echo "Directory $directory_path does not exist"
     git clone https://github.com/haochenuw/signal-demo.git
 fi
-
+```
 3. Build and setup the dependencies. 
 Note: if EC2 build fails. Can build locally.  
 ```
